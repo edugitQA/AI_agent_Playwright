@@ -1,0 +1,23 @@
+
+# Dependencies
+node_modules/
+.env
+.venv
+__pycache__/
+*.pyc
+.pytest_cache
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/blob-report/
+
+# Project specific
+logs/*.json
+logs/*.log
+dom_snapshots/*.html
+
+# IDE
+.vscode/
+.DS_Store

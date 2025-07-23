@@ -1,0 +1,18 @@
+{
+  "name": "playwright-agent",
+  "version": "1.0.0",
+  "description": "Este projeto demonstra uma Prova de Conceito (PoC) para um sistema de automação de testes E2E que utiliza Playwright, LangGraph e agentes autônomos para detectar e corrigir automaticamente falhas de XPath/componentes alterados no DOM em aplicações React. O objetivo é fornecer uma solução para ambientes de desenvolvimento e CI, onde a dinâmica das aplicações React frequentemente causa quebras nos testes E2E devido a mudanças nos seletores.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.54.1",
+    "@types/node": "^24.1.0",
+    "dotenv": "^17.2.0"
+  }
+}
