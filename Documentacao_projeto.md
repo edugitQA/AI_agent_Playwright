@@ -1,6 +1,6 @@
 # PoC: Sistema de Automação de Testes com Auto-Correção de Seletores
 
-**Autor:** Manus AI  
+**Autor:** EDUARDO ALVES
 **Data:** 23 de julho de 2025  
 **Versão:** 1.0  
 
@@ -127,8 +127,7 @@ playwright-agent/
 ├── agent/                          # Componentes de IA e auto-correção
 │   ├── __init__.py                 # Inicialização do módulo Python
 │   ├── langgraph_handler.py        # Agente LangGraph principal
-│   ├── self_healing_runner.py      # Sistema de auto-correção Python
-│   ├── self_healing_runner.js      # Bridge JavaScript para Playwright
+│   |── self_healing_runner.js      # Bridge JavaScript para Playwright
 │   └── python_bridge.py            # Ponte entre JavaScript e Python
 ├── tests/                          # Testes automatizados
 │   └── login.spec.ts              # Casos de teste com auto-correção

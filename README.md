@@ -139,6 +139,41 @@ sample-react-app/
 
 A aplicação estará disponível em `http://localhost:5173` (ou outra porta indicada no terminal). Certifique-se de mantê-la em execução enquanto realiza os testes E2E.
 
+## 5. Resolução de Problemas Comuns
+
+-   **`Error: Cannot find module '...'` (no Playwright):** Certifique-se de que você está no diretório raiz do projeto (`playwright-agent/`) ao executar `npm install` e `npx playwright test`.
+-   **`FileNotFoundError: [Errno 2] No such file or directory: '...'` (no Python):** Verifique os caminhos dos arquivos. Certifique-se de que o ambiente virtual Python está ativado e que os diretórios `logs/` e `dom_snapshots/` existem na raiz do projeto.
+-   **`Error: browserType.launch: Target page, context or browser has been closed`:** Certifique-se de que a aplicação React de exemplo (`sample-react-app`) está rodando e acessível em `http://localhost:5173` antes de executar os testes Playwright.
+-   **Problemas com a API da OpenAI:** Verifique se sua `OPENAI_API_KEY` está corretamente configurada no arquivo `.env` e se você tem acesso à internet. Erros como `400 Bad Request` ou `Unsupported model` podem indicar problemas com a chave ou o modelo selecionado (o projeto usa `gpt-4.1-mini`).
+
+## 5.1. Erro ao Instalar ou Rodar a Aplicação React de Exemplo (Vite não encontrado ou conflito de dependências)
+
+Se ao tentar rodar a aplicação React de exemplo (`npm run dev` dentro de `sample-react-app/`) você receber um erro semelhante a:
+
+```
+sh: 1: vite: not found
+```
+ou um erro de conflito de dependências como:
+
+```
+npm error ERESOLVE unable to resolve dependency tree
+```
+
+Isso ocorre devido a conflitos entre versões de pacotes (por exemplo, `date-fns` e `react-day-picker`). Para resolver rapidamente:
+
+1. Certifique-se de estar no diretório `sample-react-app`:
+   ```bash
+   cd sample-react-app
+   ```
+2. Instale o Vite ignorando conflitos de dependências:
+   ```bash
+   npm install vite --save-dev --legacy-peer-deps
+   ```
+3. Agora rode normalmente:
+   ```bash
+   npm run dev -- --host
+   ```
+
 ## Contribuição
 
 Contribuições são bem-vindas! Siga os passos abaixo para contribuir:
@@ -152,4 +187,3 @@ Contribuições são bem-vindas! Siga os passos abaixo para contribuir:
 ## Licença
 
 Este projeto está licenciado sob a licença MIT. Consulte o arquivo LICENSE para mais detalhes.
-
