@@ -49,16 +49,16 @@ class SelfHealingTestRunner {
         console.log(`🔧 Iniciando auto-correção para seletor: ${originalSelector}`);
         
         // Verificar se estamos corrigindo o botão do dashboard após login
-        if (selectorName === 'dashboardButton') {
-            console.log('⏳ Aguardando navegação após login...');
-            try {
-                // Primeiro, tentar encontrar elementos que confirmem que estamos na página correta
-                await this.page.waitForSelector('text=Login Realizado com Sucesso!', { timeout: 10000 });
-                console.log('✅ Confirmado: Página de login bem-sucedido');
-            } catch (error) {
-                console.error('❌ Não foi possível confirmar o sucesso do login');
-            }
-        }
+        // if (selectorName === 'dashboardButton') {
+        //     console.log('⏳ Aguardando navegação após login...');
+        //     try {
+        //         // Primeiro, tentar encontrar elementos que confirmem que estamos na página correta
+        //         await this.page.waitForSelector('text=Login Realizado com Sucesso!', { timeout: 10000 });
+        //         console.log('✅ Confirmado: Página de login bem-sucedido');
+        //     } catch (error) {
+        //         console.error('❌ Não foi possível confirmar o sucesso do login');
+        //     }
+        // }
         
         // Verificar cache primeiro
         const cachedSelector = this.selectorCache.get(originalSelector);
@@ -105,7 +105,7 @@ class SelfHealingTestRunner {
                 analysis.suggested_selectors, 
                 timeout, 
                 maxAttempts,
-                expectedAttributes
+                
             );
 
             // Registrar tentativa de correção
@@ -151,12 +151,17 @@ class SelfHealingTestRunner {
 
     async _captureCurrentDOM() {
         try {
-            // Aguardar qualquer navegação ou redirecionamento terminar
+              /*
             await this.page.waitForLoadState('load', { timeout: 30000 });
             // Aguardar requisições de rede terminarem
             await this.page.waitForLoadState('networkidle', { timeout: 30000 });
             // Aguardar elementos do DOM estarem estáveis
             await this.page.waitForLoadState('domcontentloaded', { timeout: 30000 });
+            */
+           console.log('⏳ Aguardando o DOM se estabilizar...');
+            await this.page.waitForLoadState('domcontentloaded', { timeout: 15000 });
+        // Uma pequena pausa para garantir que os scripts do React renderizem os elementos
+            await this.page.waitForTimeout(500); 
 
             // Pequena pausa adicional para garantir estabilidade após redirecionamentos
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -188,18 +193,19 @@ class SelfHealingTestRunner {
 
     async _callPythonAgent(domHtml, originalSelector, elementDescription) {
         return new Promise((resolve, reject) => {
-            // Criar arquivo temporário com o DOM
-            const tempFile = path.join(__dirname, '../dom_snapshots/temp_dom.html');
-            
-            fs.writeFile(tempFile, domHtml)
+            // Criar arquivo com timestamp para persistência
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const persistentDomFile = path.join(__dirname, `../dom_snapshots/dom_snapshot_${timestamp}.html`);
+
+            fs.writeFile(persistentDomFile, domHtml)
                 .then(() => {
-                    // Chamar script Python
+                    // Chamar script Python com o caminho do arquivo persistente
                     const pythonScript = path.join(__dirname, 'python_bridge.py');
                     const python = spawn('python3', [
                         pythonScript,
                         originalSelector,
                         elementDescription,
-                        tempFile
+                        persistentDomFile
                     ]);
 
                     let output = '';
@@ -221,15 +227,18 @@ class SelfHealingTestRunner {
                             } catch (parseError) {
                                 console.error('❌ Erro ao parsear resposta do Python:', parseError);
                                 console.error('Output:', output);
-                                resolve(null);
+                                reject(new Error('Falha ao parsear a resposta do agente Python.'));
                             }
                         } else {
                             console.error('❌ Erro no script Python:', errorOutput);
-                            resolve(null);
+                            reject(new Error(`Script Python finalizado com código ${code}. Erro: ${errorOutput}`));
                         }
                     });
                 })
-                .catch(reject);
+                .catch(err => {
+                    console.error('❌ Erro ao escrever o arquivo de DOM:', err);
+                    reject(err);
+                });
         });
     }
 

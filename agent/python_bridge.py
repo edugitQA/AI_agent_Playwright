@@ -76,13 +76,7 @@ def main():
         print(json.dumps(error_result, ensure_ascii=False))
         sys.exit(1)
     
-    finally:
-        # Limpar arquivo temporário
-        try:
-            if os.path.exists(dom_file):
-                os.remove(dom_file)
-        except:
-            pass
+
 
 if __name__ == "__main__":
     main()

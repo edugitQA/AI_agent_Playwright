@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { time } from 'console';
 const { SelfHealingTestRunner } = require('../agent/self_healing_runner.js');
 
 /**
@@ -95,7 +96,7 @@ class LoginTestPage {
   async clickDashboardButton() {
     try {
       // Este seletor está intencionalmente quebrado para demonstrar a auto-correção
-      await this.page.click(this.selectors.dashboardButton);
+      await this.page.click(this.selectors.dashboardButton, {timeout: 5000});
       console.log(`✅ Botão do dashboard clicado`);
     } catch (error) {
       console.error(`❌ Erro ao clicar no botão do dashboard: ${error}`);
@@ -161,7 +162,9 @@ test.describe('Sistema de Login com Auto-Correção', () => {
     selfHealingRunner = new SelfHealingTestRunner(page);
   });
 
-  test('Deve fazer login com sucesso e navegar para o dashboard', async ({ page }) => {
+ // No arquivo tests/login.spec.ts
+
+test('Deve fazer login com sucesso e navegar para o dashboard', async ({ page }) => {
     console.log('🚀 Iniciando teste de login com sistema de auto-correção...');
     
     // Passo 1: Navegar para a página de login
@@ -170,21 +173,17 @@ test.describe('Sistema de Login com Auto-Correção', () => {
     // Passo 2: Preencher credenciais de login
     await loginPage.fillUsername('admin');
     
-    // Passo 3: Tentar preencher a senha (seletor quebrado - deve acionar auto-correção)
+    // Passo 3: Tentar preencher a senha (com auto-correção)
     try {
       await loginPage.fillPassword('password123');
     } catch (error) {
       console.log('🔧 Seletor quebrado detectado! Acionando sistema de auto-correção...');
-      
-      // Acionar o sistema de auto-correção
       const correctedSelector = await selfHealingRunner.healBrokenSelector(
         'passwordInput',
         loginPage.getSelector('passwordInput'),
         'input field for password with placeholder "Digite sua senha"'
       );
-      
       if (correctedSelector) {
-        // Atualizar o seletor e tentar novamente
         loginPage.updateSelector('passwordInput', correctedSelector);
         await loginPage.fillPassword('password123');
       } else {
@@ -195,16 +194,16 @@ test.describe('Sistema de Login com Auto-Correção', () => {
     // Passo 4: Clicar no botão de login
     await loginPage.clickLoginButton();
     
-    // Passo 5: Verificar se o login foi bem-sucedido
+    // Passo 5: Verificar se a tela de sucesso do login está visível
     await loginPage.verifyLoginSuccess();
     
-    // Passo 6: Tentar clicar no botão do dashboard (seletor quebrado - deve acionar auto-correção)
+    // Passo 6: Tentar clicar no botão PARA IR AO DASHBOARD (com seletor quebrado e auto-correção)
     try {
-      await loginPage.clickDashboardButton();
+      // Esta chamada já tem o timeout curto que adicionamos antes, o que é ótimo.
+      await loginPage.clickDashboardButton(); 
     } catch (error) {
       console.log('🔧 Seletor quebrado detectado! Acionando sistema de auto-correção...');
       
-      // Acionar o sistema de auto-correção
       const correctedSelector = await selfHealingRunner.healBrokenSelector(
         'dashboardButton',
         loginPage.getSelector('dashboardButton'),
@@ -212,20 +211,19 @@ test.describe('Sistema de Login com Auto-Correção', () => {
       );
       
       if (correctedSelector) {
-        // Atualizar o seletor e tentar novamente
         loginPage.updateSelector('dashboardButton', correctedSelector);
-        await loginPage.clickDashboardButton();
+        await loginPage.clickDashboardButton(); // Tenta novamente com o seletor corrigido
       } else {
         throw new Error('Sistema de auto-correção falhou ao encontrar seletor para o botão do dashboard');
       }
     }
-    
-    // Passo 7: Verificar se o dashboard está visível
+
+    // Passo 7: com a navegação feita, verificar se o dashboard está visível
     await loginPage.verifyDashboardVisible();
     
     console.log('✅ Teste concluído com sucesso! Sistema de auto-correção funcionou perfeitamente.');
   });
-
+  
   test('Deve exibir mensagem de erro para credenciais inválidas', async ({ page }) => {
     console.log('🚀 Iniciando teste de credenciais inválidas...');
     

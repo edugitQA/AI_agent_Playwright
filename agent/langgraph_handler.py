@@ -1,7 +1,7 @@
 """
 PoC: Agente LangGraph para Auto-Correção de Seletores em Testes E2E
 
-Este módulo implementa um agente autônomo usando LangGraph e OpenAI GPT-4o-mini
+Este módulo implementa um agente autônomo usando LangGraph e OpenAI gpt-4o-mini,
 para analisar o DOM de aplicações React e sugerir novos seletores quando
 os seletores originais falham durante a execução de testes Playwright.
 
@@ -217,7 +217,7 @@ class LangGraphSelectorAgent:
         
         # Configurar modelo (usando modelo suportado)
         self.llm = ChatOpenAI(
-            model='gpt-4.1-mini',  # Modelo suportado pela API
+            model='gpt-4o-mini', 
             temperature=0.1,  # Baixa temperatura para respostas mais determinísticas
             max_tokens=2000
         )
