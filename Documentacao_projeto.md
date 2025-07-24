@@ -363,7 +363,7 @@ A disponibilização desta PoC como referência pode acelerar a adoção de téc
 
 ---
 
-**Autor:** Manus AI  
+**Autor:** EDUARDO ALVES
 **Data de Conclusão:** 23 de julho de 2025  
 **Versão do Documento:** 1.0  
 **Status:** Concluído

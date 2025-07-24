@@ -15,7 +15,7 @@ const { SelfHealingTestRunner } = require('../agent/self_healing_runner.js');
  * 3. Se um seletor falhar, acionar o agente LangGraph
  * 4. O agente analisa o DOM e sugere novos seletores
  * 5. O teste é reexecutado com os seletores corrigidos
- */
+ */ 
 
 class LoginTestPage {
   constructor(private page: Page) {}
