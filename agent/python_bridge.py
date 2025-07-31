@@ -8,7 +8,7 @@ e o agente Python LangGraph, permitindo a análise do DOM e sugestão de seletor
 Uso:
     python3 python_bridge.py <original_selector> <element_description> <dom_file>
 
-Autor: Manus AI
+Autor: EDU Alves
 Data: 2025-07-23
 """
 

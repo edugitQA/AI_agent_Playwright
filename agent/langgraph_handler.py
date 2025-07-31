@@ -105,7 +105,7 @@ class DOMAnalyzer:
             expected_type = 'password'
         elif 'text' in element_description.lower():
             expected_type = 'text'
-        # Adicione outros tipos conforme necessário
+        # Aqui Adicione outros tipos conforme necessário
 
         for tag in self.soup.find_all(['input', 'button', 'div', 'span', 'a', 'form']):
             # Filtro: se esperado um input de senha, só aceitar input[type=password]
@@ -207,7 +207,7 @@ class DOMAnalyzer:
         return selectors
 
 class LangGraphSelectorAgent:
-    """Agente LangGraph para análise e correção de seletores"""
+    """Agente que realiza análise e correção de seletores"""
     
     def __init__(self):
         # Configurar OpenAI

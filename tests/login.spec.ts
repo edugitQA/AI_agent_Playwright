@@ -7,12 +7,12 @@ const { SelfHealingTestRunner } = require('../agent/self_healing_runner.js');
  * 
  * Este arquivo demonstra um teste Playwright que inclui intencionalmente
  * um seletor quebrado para validar o sistema de auto-recuperação usando
- * LangGraph e agentes autônomos.
+ * o agente de auto-correção.
  * 
  * Fluxo do teste:
  * 1. Navegar para a aplicação React
  * 2. Tentar fazer login usando seletores que podem estar quebrados
- * 3. Se um seletor falhar, acionar o agente LangGraph
+ * 3. Se um seletor falhar, acionar o agente de auto-correção
  * 4. O agente analisa o DOM e sugere novos seletores
  * 5. O teste é reexecutado com os seletores corrigidos
  */ 
@@ -199,7 +199,7 @@ test('Deve fazer login com sucesso e navegar para o dashboard', async ({ page })
     
     // Passo 6: Tentar clicar no botão PARA IR AO DASHBOARD (com seletor quebrado e auto-correção)
     try {
-      // Esta chamada já tem o timeout curto que adicionamos antes, o que é ótimo.
+      // Esta chamada já tem o timeout curto que adicionei antes
       await loginPage.clickDashboardButton(); 
     } catch (error) {
       console.log('🔧 Seletor quebrado detectado! Acionando sistema de auto-correção...');

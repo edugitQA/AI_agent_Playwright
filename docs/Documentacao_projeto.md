@@ -120,8 +120,6 @@ A implementação da PoC utiliza uma combinação cuidadosamente selecionada de 
 
 A estrutura do projeto foi organizada seguindo melhores práticas de desenvolvimento de software, com separação clara de responsabilidades e modularidade que facilita manutenção e extensão.
 
-
-
 ```
 playwright-agent/
 ├── agent/                          # Componentes de IA e auto-correção
