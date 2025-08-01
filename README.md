@@ -1,189 +1,540 @@
-# Automação de Testes com Auto-Correção de Seletores (Playwright + LangGraph)
+# 🤖 Automação de Testes com Auto-Correção de Seletores
 
-Este projeto é uma Prova de Conceito (PoC) que demonstra uma solução inovadora para automação de testes End-to-End (E2E) em aplicações React. Utilizando Playwright, LangGraph e agentes autônomos baseados em IA, o sistema detecta e corrige automaticamente falhas de seletores no DOM, garantindo robustez frente a mudanças frequentes em aplicações modernas.
+[![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-FF6B6B?style=for-the-badge&logo=langchain&logoColor=white)](https://langchain-ai.github.io/langgraph/)
 
-## Visão Geral
+> **Uma solução revolucionária que combina Inteligência Artificial e automação de testes para criar uma suíte de testes verdadeiramente resiliente.**
+
+Este projeto é uma **Prova de Conceito (PoC)** inovadora que demonstra como resolver um dos maiores desafios em automação de testes: **a fragilidade dos seletores**. Utilizando uma arquitetura híbrida que combina **Playwright**, **LangGraph**, **OpenAI GPT-4** e **agentes autônomos baseados em IA**, o sistema detecta e corrige automaticamente falhas de seletores no DOM em tempo real.
+
+## 🎯 **O Problema que Resolvemos**
+
+Em projetos de desenvolvimento ágil, especialmente com frameworks como React, Vue ou Angular, as mudanças frequentes na interface do usuário quebram constantemente os testes automatizados. Tradicionalmente, isso resulta em:
+
+- ⏰ **Horas perdidas** em manutenção manual de testes
+- 🔥 **Pipelines de CI/CD interrompidos** por seletores obsoletos  
+- 😤 **Frustração da equipe** com testes "flaky" e instáveis
+- 💸 **Custos elevados** de manutenção da automação
+
+## 🚀 **Nossa Solução**
+
+Desenvolvemos um **agente de IA autônomo** que atua como um "mecânico de testes" inteligente, capaz de:
+
+## 🔍 **Visão Geral da Arquitetura**
+
+Nossa solução utiliza uma arquitetura de **multi-agentes** que trabalham em conjunto para garantir a resiliência dos testes:
+
+### 🧠 **Stack Tecnológico Principal**
+
+| Tecnologia | Função | Versão |
+|------------|--------|--------|
+| **🎭 Playwright** | Framework de automação E2E | v1.40+ |
+| **🐍 Python** | Runtime do agente de IA | 3.9+ |
+| **🟢 Node.js** | Runtime dos testes | 18.x+ |
+| **🤖 OpenAI GPT-4** | Motor de análise inteligente | gpt-4o-mini |
+| **🔗 LangGraph** | Orquestração de agentes IA | Latest |
+| **⚛️ React + Vite** | Aplicação de demonstração | v18+ |
+| **🎨 shadcn/ui** | Componentes UI da demo | Latest |
+
+### 🔄 **Fluxo de Auto-Correção**
+
+1. **🔍 Detecção:** O teste identifica que um seletor falhou
+2. **📸 Captura:** Sistema captura o estado atual do DOM
+3. **🧠 Análise:** Agente IA analisa mudanças estruturais
+4. **🎯 Correção:** IA sugere novos seletores otimizados  
+5. **✅ Validação:** Sistema valida e aplica a correção
+6. **📝 Aprendizado:** Logs registram a correção para futuras referências
 
 A solução foi projetada para resolver um dos maiores desafios em testes E2E: a fragilidade dos seletores. Combinando análise de DOM, aprendizado de máquina e integração com a OpenAI, o sistema:
 
-- Detecta falhas automaticamente durante a execução dos testes.
-- Analisa o DOM atual da aplicação para identificar mudanças.
-- Sugere novos seletores com base em atributos confiáveis.
-- Aplica os seletores corrigidos dinamicamente e reexecuta os testes.
+- 🔍 **Detecta falhas** automaticamente durante a execução dos testes
+- 🧠 **Analisa o DOM atual** da aplicação para identificar mudanças
+- 🎯 **Sugere novos seletores** com base em atributos confiáveis
+- ⚡ **Aplica correções dinamicamente** e reexecuta os testes sem intervenção manual
 
-## Funcionalidades
+## ✨ **Funcionalidades Principais**
 
-O sistema oferece as seguintes funcionalidades principais:
+### 🤖 **Inteligência Artificial Integrada**
+- **🧠 Análise Semântica do DOM:** Utiliza GPT-4 para entender a estrutura e intenção dos elementos
+- **🎯 Sugestão Inteligente de Seletores:** Gera seletores robustos baseados em múltiplos critérios
+- **📚 Aprendizado Contínuo:** Sistema evolui com base em correções anteriores
 
-- **Detecção Automática de Falhas:** Identifica automaticamente quando um elemento não é encontrado durante a execução dos testes E2E.
-- **Análise Inteligente do DOM:** Utiliza o agente LangGraph para analisar o DOM atual da aplicação e identificar mudanças estruturais ou de atributos.
-- **Sugestão de Seletores Otimizados:** Gera sugestões de novos seletores com base em atributos confiáveis, como texto visível, classes, hierarquia pai-filho e outros critérios relevantes.
-- **Auto-Correção Dinâmica:** Aplica os novos seletores sugeridos em tempo de execução e reexecuta os testes quebrados sem intervenção manual.
-- **Logs Detalhados:** Gera logs abrangentes para cada etapa do processo, incluindo falhas detectadas, seletores sugeridos e resultados das correções.
-- **Relatórios Interativos:** Produz relatórios HTML detalhados com resultados dos testes, capturas de tela e traces de execução para facilitar a análise.
-- **Integração com OpenAI:** Utiliza modelos de linguagem avançados para melhorar a análise do DOM e a geração de seletores.
-- **Compatibilidade com Aplicações React:** Projetado para lidar com a dinâmica de aplicações React modernas, onde mudanças frequentes no DOM são comuns.
+### 🔧 **Auto-Correção Avançada**
+- **⚡ Detecção Automática de Falhas:** Identifica quando elementos não são encontrados
+- **🔄 Correção em Tempo Real:** Aplica novos seletores sem interromper a execução
+- **✅ Validação Inteligente:** Confirma que a correção resolve o problema
 
-## Estrutura do Projeto
+### 📊 **Observabilidade e Monitoramento**
+- **📝 Logs Detalhados:** Registro completo de cada etapa do processo de correção
+- **📸 Snapshots do DOM:** Capturas automáticas para análise posterior
+- **📈 Relatórios Interativos:** Dashboard HTML com métricas e resultados
+- **🎬 Traces de Execução:** Gravação completa das sessões de teste
+
+### 🏗️ **Arquitetura Robusta**
+
+- **🔧 Padrão Page Object:** Implementação que facilita manutenção e reutilização
+- **🛡️ Tratamento de Erros:** Sistema robusto de try/catch com fallbacks inteligentes
+- **🔌 Integração Simples:** Fácil adoção em projetos existentes
+- **⚛️ Compatibilidade React:** Otimizado para SPAs e componentes dinâmicos
+
+## 🏗️ **Estrutura do Projeto**
 
 ```
-/playwright-agent/
-├── sample-react-app/       # Aplicação React de exemplo
-├── tests/                  # Scripts de teste Playwright
-├── agent/                  # Lógica do agente LangGraph
-├── dom_snapshots/          # Snapshots do DOM para análise
-├── logs/                   # Logs de execução e aprendizado
-├── README.md               # Documentação do projeto
-├── package.json            # Dependências do projeto
-├── playwright.config.ts    # Configuração do Playwright
+📁 playwright-agent/
+├── 📁 sample-react-app/         # 🎯 Aplicação React de demonstração
+│   ├── 📁 src/components/       # 🧩 Componentes UI (shadcn/ui)
+│   ├── 📁 src/hooks/           # 🪝 Hooks customizados React
+│   ├── 📁 src/lib/             # 🛠️ Utilitários e configurações
+│   └── 📄 vite.config.js       # ⚡ Configuração do Vite
+├── 📁 tests/                   # 🧪 Scripts de teste Playwright
+│   ├── 📄 login.spec.ts        # 🔐 Testes de autenticação
+│   └── 📁 pages/               # 📄 Page Objects pattern
+├── 📁 agent/                   # 🤖 Motor de IA e auto-correção
+│   ├── 📄 langgraph_handler.py # 🧠 Orquestrador LangGraph
+│   ├── 📄 python_bridge.py     # 🌉 Ponte Python-Node.js
+│   └── 📄 self_healing_runner.js # ⚡ Runner de auto-correção
+├── 📁 dom_snapshots/           # 📸 Capturas do DOM para análise
+├── 📁 logs/                    # 📊 Logs de execução e aprendizado
+├── 📁 test-results/            # 📈 Relatórios e resultados
+├── 📄 playwright.config.ts     # 🎭 Configuração do Playwright
+├── 📄 package.json             # 📦 Dependências Node.js
+└── 📄 guia-escrita-test.md     # 📖 Guia para escrever testes
 ```
 
-## Pré-requisitos
+## 🛠️ **Pré-requisitos**
 
-Certifique-se de ter os seguintes softwares instalados:
+Certifique-se de ter os seguintes softwares instalados em seu ambiente:
 
-- **Node.js (18.x ou superior)**: Inclui `npm` e `npx`.
-- **Python (3.9 ou superior)**: Recomendado Python 3.11.
-- **Git**: Para clonar o repositório.
+| Software | Versão Mínima | Versão Recomendada | Observações |
+|----------|----------------|-------------------|-------------|
+| **🟢 Node.js** | 18.x | 20.x+ | Inclui npm e npx |
+| **🐍 Python** | 3.9 | 3.11+ | Para o agente de IA |
+| **📦 Git** | 2.0+ | Latest | Para clonar o repositório |
+| **🔑 OpenAI API Key** | - | - | Necessária para IA |
 
-## Configuração do Ambiente
+## 🚀 **Configuração do Ambiente**
 
-### 1. Clonar o Repositório
+### 🗂️ **1. Clonar o Repositório**
 
 ```bash
+# Clone o repositório
 git clone https://github.com/edugitQA/AI_agent_playright.git
+
+# Navegue para o diretório do projeto
 cd AI_agent_playright
+
+# Verifique a estrutura do projeto
+ls -la
 ```
 
-### 2. Configurar Ambiente Python
+### 🐍 **2. Configurar Ambiente Python (Agente IA)**
 
-1. Criar e ativar um ambiente virtual:
+```bash
+# Crie um ambiente virtual Python isolado
+python3 -m venv venv
+
+# Ative o ambiente virtual
+source venv/bin/activate          # 🐧 Linux/macOS
+# OU
+venv\Scripts\activate             # 🪟 Windows
+
+# Atualize o pip para a versão mais recente
+pip install --upgrade pip
+
+# Instale as dependências do agente IA
+pip install langgraph openai beautifulsoup4 lxml langchain-openai
+
+# Verifique a instalação
+python -c "import langgraph, openai; print('✅ Dependências Python instaladas com sucesso!')"
+```
+
+### 🟢 **3. Configurar Ambiente Node.js (Testes)**
+
+```bash
+# Instale as dependências do projeto principal
+npm install
+
+# Instale os navegadores do Playwright
+npx playwright install
+
+# Verifique a instalação do Playwright
+npx playwright --version
+
+# Instale dependências da aplicação React de exemplo
+cd sample-react-app
+npm install
+cd ..
+
+echo "✅ Ambiente Node.js configurado com sucesso!"
+```
+
+### 🔑 **4. Configurar API da OpenAI**
+
+1. **Obter chave da API:**
+   - Acesse [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+   - Crie uma nova chave de API
+   - Copie a chave gerada
+
+2. **Configurar variável de ambiente:**
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # Linux/macOS
-   venv\Scripts\activate   # Windows
+   # Crie o arquivo .env na raiz do projeto
+   touch .env
+   
+   # Adicione sua chave da API OpenAI
+   echo "OPENAI_API_KEY=sk-your-api-key-here" >> .env
+   
+   # Verifique se foi adicionada corretamente
+   cat .env
    ```
 
-2. Instalar dependências:
+3. **Validar configuração:**
    ```bash
-   pip install langgraph openai beautifulsoup4 lxml langchain-openai
+   # Teste a conexão com a API
+   python -c "
+   import os
+   from openai import OpenAI
+   client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+   print('✅ Conexão com OpenAI configurada com sucesso!')
+   "
    ```
 
-### 3. Configurar Ambiente Node.js
+## 🎮 **Como Executar o Projeto**
 
-1. Instalar dependências:
+### 🚀 **Execução Rápida (Quick Start)**
+
+```bash
+# 1. 🎯 Inicie a aplicação React de exemplo
+npm run dev
+# A aplicação estará disponível em: http://localhost:5173
+
+# 2. 🧪 Em outro terminal, execute os testes com auto-correção
+npx playwright test
+
+# 3. 📊 Visualize os resultados detalhados
+npx playwright show-report
+```
+
+### 🔧 **Execução Detalhada**
+
+**Passo 1: Iniciar a Aplicação React**
+```bash
+# Opção A: Usando task do VS Code (recomendado)
+# Use Ctrl+Shift+P > "Tasks: Run Task" > "Iniciar aplicação React de exemplo"
+
+# Opção B: Comando manual
+npm run dev
+
+# Verifique se a aplicação está rodando
+curl -s http://localhost:5173 | head -n 5
+```
+
+**Passo 2: Executar Testes com Auto-Correção**
+```bash
+# Execute todos os testes
+npx playwright test
+
+# Execute apenas testes específicos
+npx playwright test login.spec.ts
+
+# Execute em modo debug para ver a auto-correção em ação
+npx playwright test --debug
+
+# Execute com interface gráfica
+npx playwright test --ui
+```
+
+**Passo 3: Analisar Resultados**
+```bash
+# Gere relatório HTML interativo
+npx playwright show-report
+
+# Visualize logs de auto-correção
+cat logs/langgraph_agent.log | tail -n 50
+
+# Analise snapshots do DOM
+ls -la dom_snapshots/
+```
+
+## 🎯 **Aplicação React de Demonstração**
+
+O projeto inclui uma **aplicação React moderna** especialmente criada para demonstrar as capacidades do sistema de auto-correção. Esta aplicação serve como ambiente controlado para simular cenários reais onde seletores quebram devido a mudanças na interface.
+
+### 🎨 **Características da Aplicação**
+
+- **⚛️ React 18** com hooks modernos
+- **⚡ Vite** para desenvolvimento ultra-rápido  
+- **🎨 shadcn/ui** para componentes consistentes
+- **🎭 Tailwind CSS** para estilização
+- **🔧 TypeScript** para type safety
+
+### 🏗️ **Estrutura Técnica**
+
+```
+📁 sample-react-app/
+├── 📁 src/                     # 🎯 Código-fonte principal
+│   ├── 📄 App.jsx             # 🏠 Componente raiz da aplicação
+│   ├── 📄 main.jsx            # 🚀 Ponto de entrada React
+│   ├── 📁 components/         # 🧩 Biblioteca de componentes UI
+│   │   ├── 📁 ui/             # 🎨 Componentes shadcn/ui
+│   │   │   ├── 📄 button.jsx  # 🔘 Botões customizáveis
+│   │   │   ├── 📄 input.jsx   # 📝 Campos de entrada
+│   │   │   ├── 📄 card.jsx    # 🃏 Cards e containers
+│   │   │   └── ...            # 🎛️ Mais de 50 componentes
+│   ├── 📁 hooks/              # 🪝 Hooks customizados React
+│   │   └── 📄 use-mobile.js   # 📱 Hook para detecção mobile
+│   ├── 📁 lib/                # 🛠️ Utilitários e configurações
+│   │   └── 📄 utils.js        # 🔧 Funções auxiliares
+│   └── 📁 assets/             # 🖼️ Recursos estáticos
+│       └── 📄 react.svg       # ⚛️ Logo do React
+├── 📁 public/                 # 🌐 Arquivos públicos
+│   ├── 📄 index.html          # 📃 Template HTML
+│   └── 📄 favicon.ico         # 🎭 Ícone da aplicação
+├── 📄 package.json            # 📦 Dependências e scripts
+├── 📄 vite.config.js          # ⚡ Configuração do Vite
+├── 📄 tailwind.config.js      # 🎨 Configuração do Tailwind
+└── 📄 components.json         # 🧩 Configuração shadcn/ui
+```
+
+### 🚀 **Como Executar a Aplicação**
+
+```bash
+# Navegue para o diretório da aplicação
+cd sample-react-app
+
+# Instale as dependências (caso ainda não tenha feito)
+npm install
+
+# Inicie o servidor de desenvolvimento
+npm run dev
+
+# Ou inicie com acesso externo (útil para testes remotos)
+npm run dev -- --host
+
+# Acesse a aplicação
+open http://localhost:5173  # macOS
+# ou visite http://localhost:5173 no seu navegador
+```
+
+### 🎯 **Funcionalidades para Teste**
+
+A aplicação inclui diversos componentes e cenários ideais para demonstrar a auto-correção:
+
+- **🔐 Formulários de Login:** Campos com diferentes tipos de seletores
+- **📝 Formulários de Cadastro:** Validações e estados dinâmicos  
+- **🔘 Botões Interativos:** Múltiplos estilos e comportamentos
+- **📋 Listas Dinâmicas:** Conteúdo que muda frequentemente
+- **🎛️ Componentes UI:** Cards, modais, dropdowns, etc.
+
+## 🔧 **Resolução de Problemas Comuns**
+
+### 🐛 **Problemas com Playwright**
+
+**❌ Erro: `Cannot find module '...'`**
+```bash
+# Solução: Certifique-se de estar no diretório correto
+pwd  # Deve mostrar: /path/to/playwright-agent
+npm install
+npx playwright install
+```
+
+**❌ Erro: `Target page, context or browser has been closed`**
+```bash
+# Solução: Verifique se a aplicação React está rodando
+curl -I http://localhost:5173
+# Se não estiver, execute:
+cd sample-react-app && npm run dev
+```
+
+### 🐍 **Problemas com Python/IA**
+
+**❌ Erro: `FileNotFoundError: [Errno 2] No such file or directory`**
+```bash
+# Solução: Verifique ambiente virtual e diretórios
+source venv/bin/activate
+mkdir -p logs dom_snapshots
+ls -la logs/ dom_snapshots/
+```
+
+**❌ Erro: `OpenAI API Error (400 Bad Request)`**
+```bash
+# Solução: Verifique sua chave da API
+echo $OPENAI_API_KEY  # Deve mostrar sua chave
+# Se vazia, adicione ao .env:
+echo "OPENAI_API_KEY=sk-your-key-here" >> .env
+source .env
+```
+
+### ⚛️ **Problemas com React/Vite**
+
+**❌ Erro: `sh: 1: vite: not found`**
+```bash
+# Solução: Instale Vite com compatibilidade legacy
+cd sample-react-app
+npm install vite --save-dev --legacy-peer-deps
+npm run dev
+```
+
+**❌ Erro: `ERESOLVE unable to resolve dependency tree`**
+```bash
+# Solução: Force a instalação ignorando conflitos de peer dependencies
+cd sample-react-app
+rm -rf node_modules package-lock.json
+npm install --legacy-peer-deps
+```
+
+### 🔧 **Problemas de Performance**
+
+**❌ Testes muito lentos**
+```bash
+# Solução: Execute com menos workers
+npx playwright test --workers=1
+
+# Ou execute apenas testes específicos
+npx playwright test tests/login.spec.ts
+```
+
+**❌ Memória insuficiente**
+```bash
+# Solução: Limite uso de memória
+export NODE_OPTIONS="--max-old-space-size=4096"
+npx playwright test
+```
+
+## 📚 **Documentação Adicional**
+
+### 📖 **Guias Disponíveis**
+
+| Documento | Descrição | Público-Alvo |
+|-----------|-----------|--------------|
+| `📄 guia-escrita-test.md` | Como escrever testes com auto-correção | QAs e Desenvolvedores |
+| `📄 docs/Documentacao_projeto.md` | Documentação técnica detalhada | Arquitetos e Tech Leads |
+| `📄 README.md` | Overview e setup do projeto | Todos os usuários |
+
+### 🛠️ **APIs e Integrações**
+
+- **🎭 Playwright API:** [playwright.dev/docs](https://playwright.dev/docs)
+- **🤖 OpenAI API:** [platform.openai.com/docs](https://platform.openai.com/docs)
+- **🔗 LangGraph:** [langchain-ai.github.io/langgraph](https://langchain-ai.github.io/langgraph/)
+- **⚛️ React Docs:** [react.dev](https://react.dev)
+
+### 🎯 **Próximos Passos**
+
+1. **📖 Leia o guia:** `guia-escrita-test.md` para entender o padrão de escrita
+2. **🧪 Execute testes:** Comece com `npx playwright test --ui`
+3. **🔧 Customize:** Adapte os Page Objects para sua aplicação
+4. **📊 Monitore:** Use os logs e relatórios para otimizar
+
+## 🤝 **Contribuição**
+
+Contribuições são muito bem-vindas! Este projeto é **open source** e acreditamos que a colaboração da comunidade é essencial para aprimorar esta solução inovadora.
+
+### 🚀 **Como Contribuir**
+
+1. **🍴 Fork o repositório**
    ```bash
-   npm install
+   # Clique em "Fork" no GitHub ou use a CLI
+   gh repo fork edugitQA/AI_agent_playright
    ```
 
-2. Instalar navegadores do Playwright:
+2. **🌿 Crie uma branch para sua feature**
    ```bash
-   npx playwright install
+   git checkout -b feature/minha-nova-feature
+   # ou
+   git checkout -b fix/correcao-importante
    ```
 
-### 4. Configurar Variáveis de Ambiente
-
-1. Criar um arquivo `.env` na raiz do projeto.
-2. Adicionar a chave da API OpenAI:
-   ```
-   OPENAI_API_KEY=SUA_CHAVE_API_OPENAI
-   ```
-
-## Como Executar
-
-1. Iniciar a aplicação React de exemplo:
+3. **💻 Desenvolva sua contribuição**
    ```bash
-   npm run dev
-   ```
-
-2. Executar os testes Playwright:
-   ```bash
+   # Faça suas alterações
+   # Teste localmente
+   npm test
    npx playwright test
    ```
 
-## Aplicação React de Testes
-
-O projeto inclui uma aplicação React de exemplo localizada no diretório `sample-react-app/`. Esta aplicação serve como alvo para os testes E2E e simula cenários reais de interação com o usuário. Ela foi projetada para ser simples, mas suficientemente robusta para demonstrar as capacidades do sistema de auto-correção de seletores.
-
-### Estrutura da Aplicação React
-
-```
-sample-react-app/
-├── src/                    # Código-fonte principal
-│   ├── App.jsx            # Componente principal da aplicação
-│   ├── components/        # Componentes reutilizáveis da interface
-│   ├── hooks/             # Hooks customizados
-│   ├── lib/               # Funções utilitárias
-│   └── assets/            # Recursos estáticos (imagens, ícones, etc.)
-├── public/                # Arquivos públicos (favicon, index.html)
-├── package.json           # Dependências e scripts do projeto
-├── vite.config.js         # Configuração do Vite
-```
-
-### Como Iniciar a Aplicação React
-
-1. Navegue até o diretório da aplicação React:
+4. **📝 Commit suas mudanças**
    ```bash
-   cd sample-react-app
+   git add .
+   git commit -m "feat: adiciona nova funcionalidade X"
+   # Use conventional commits: feat, fix, docs, style, refactor, test, chore
    ```
 
-2. Instale as dependências:
+5. **📤 Envie para o repositório remoto**
    ```bash
-   npm install
+   git push origin feature/minha-nova-feature
    ```
 
-3. Inicie o servidor de desenvolvimento:
-   ```bash
-   npm run dev -- --host
-   ```
+6. **🔄 Abra um Pull Request**
+   - Acesse o GitHub e clique em "Compare & pull request"
+   - Descreva claramente suas mudanças
+   - Aguarde a revisão da equipe
 
-A aplicação estará disponível em `http://localhost:5173` (ou outra porta indicada no terminal). Certifique-se de mantê-la em execução enquanto realiza os testes E2E.
+### 🎯 **Áreas que Precisam de Contribuição**
 
-## 5. Resolução de Problemas Comuns
+| Área | Prioridade | Descrição |
+|------|------------|-----------|
+| **🧠 Algoritmos de IA** | 🔴 Alta | Melhorar precisão da análise de DOM |
+| **🎭 Suporte a Frameworks** | 🟡 Média | Angular, Vue.js, Svelte |
+| **📱 Mobile Testing** | 🟡 Média | Suporte para apps React Native |
+| **🔌 Integrações** | 🟢 Baixa | Jenkins, GitHub Actions, Azure DevOps |
+| **📖 Documentação** | 🟡 Média | Exemplos, tutoriais, traduções |
 
--   **`Error: Cannot find module '...'` (no Playwright):** Certifique-se de que você está no diretório raiz do projeto (`playwright-agent/`) ao executar `npm install` e `npx playwright test`.
--   **`FileNotFoundError: [Errno 2] No such file or directory: '...'` (no Python):** Verifique os caminhos dos arquivos. Certifique-se de que o ambiente virtual Python está ativado e que os diretórios `logs/` e `dom_snapshots/` existem na raiz do projeto.
--   **`Error: browserType.launch: Target page, context or browser has been closed`:** Certifique-se de que a aplicação React de exemplo (`sample-react-app`) está rodando e acessível em `http://localhost:5173` antes de executar os testes Playwright.
--   **Problemas com a API da OpenAI:** Verifique se sua `OPENAI_API_KEY` está corretamente configurada no arquivo `.env` e se você tem acesso à internet. Erros como `400 Bad Request` ou `Unsupported model` podem indicar problemas com a chave ou o modelo selecionado (o projeto usa `gpt-4.1-mini`).
+### 📋 **Diretrizes de Contribuição**
 
-## 5.1. Erro ao Instalar ou Rodar a Aplicação React de Exemplo (Vite não encontrado ou conflito de dependências)
+- **✅ Qualidade de Código:** Use ESLint, Prettier e siga os padrões existentes
+- **🧪 Testes:** Adicione testes para novas funcionalidades
+- **📖 Documentação:** Atualize o README e guias quando necessário
+- **🏷️ Conventional Commits:** Use prefixos padronizados (feat, fix, docs, etc.)
+- **🔍 Code Review:** Seja respeitoso e construtivo nas revisões
 
-Se ao tentar rodar a aplicação React de exemplo (`npm run dev` dentro de `sample-react-app/`) você receber um erro semelhante a:
+### 🐛 **Reportar Bugs**
 
-```
-sh: 1: vite: not found
-```
-ou um erro de conflito de dependências como:
+Encontrou um problema? Abra uma [issue](https://github.com/edugitQA/AI_agent_playright/issues) com:
 
-```
-npm error ERESOLVE unable to resolve dependency tree
-```
+- **📝 Descrição clara** do problema
+- **🔧 Passos para reproduzir** o erro
+- **💻 Ambiente:** SO, versões do Node.js, Python, etc.
+- **📊 Logs relevantes** (logs/, dom_snapshots/)
+- **📸 Screenshots** se aplicável
 
-Isso ocorre devido a conflitos entre versões de pacotes (por exemplo, `date-fns` e `react-day-picker`). Para resolver rapidamente:
+## 📄 **Licença**
 
-1. Certifique-se de estar no diretório `sample-react-app`:
-   ```bash
-   cd sample-react-app
-   ```
-2. Instale o Vite ignorando conflitos de dependências:
-   ```bash
-   npm install vite --save-dev --legacy-peer-deps
-   ```
-3. Agora rode normalmente:
-   ```bash
-   npm run dev -- --host
-   ```
+Este projeto está licenciado sob a **Licença MIT** - veja o arquivo [LICENSE](LICENSE) para detalhes completos.
 
-## Contribuição
+### 📋 **Resumo da Licença MIT**
 
-Contribuições são bem-vindas! Siga os passos abaixo para contribuir:
+- ✅ **Uso comercial permitido**
+- ✅ **Modificação permitida** 
+- ✅ **Distribuição permitida**
+- ✅ **Uso privado permitido**
+- ❌ **Sem garantia**
+- ❌ **Sem responsabilidade**
 
-1. Faça um fork do repositório.
-2. Crie uma branch para sua feature ou correção: `git checkout -b minha-feature`.
-3. Commit suas mudanças: `git commit -m 'Minha nova feature'`.
-4. Envie para o repositório remoto: `git push origin minha-feature`.
-5. Abra um Pull Request.
+---
 
-## Licença
+## 🙏 **Agradecimentos**
 
-Este projeto está licenciado sob a licença MIT. Consulte o arquivo LICENSE para mais detalhes.
+Agradecemos a todas as tecnologias e comunidades que tornaram este projeto possível:
+
+- **🎭 Playwright Team** - Framework robusto de automação
+- **🤖 OpenAI** - Modelos de IA avançados
+- **🔗 LangChain/LangGraph** - Orquestração de agentes
+- **⚛️ React Team** - Framework moderno para UI
+- **⚡ Vite Team** - Build tool ultra-rápido
+- **🎨 shadcn/ui** - Biblioteca de componentes elegante
+
+**Desenvolvido com ❤️ por [Eduardo Silva](https://github.com/edugitQA)**
+
+---
+
+<div align="center">
+
+**⭐ Se este projeto foi útil para você, considere dar uma estrela no GitHub! ⭐**
+
+[![GitHub stars](https://img.shields.io/github/stars/edugitQA/AI_agent_playright?style=social)](https://github.com/edugitQA/AI_agent_playright/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/edugitQA/AI_agent_playright?style=social)](https://github.com/edugitQA/AI_agent_playright/network/members)
+
+</div>
