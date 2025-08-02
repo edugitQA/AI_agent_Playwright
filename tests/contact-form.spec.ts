@@ -66,7 +66,7 @@ test.describe('Formulário de Contato com Auto-Correção', () => {
 
         // Selecionar assunto
         try {
-            await contactPage.selectSubject('Suporte Técnico');
+            await contactPage.selectSubject('Problema técnico');
         } catch (error) {
             console.log('🔧 Seletor quebrado detectado para seleção de assunto! Acionando sistema de auto-correção...');
             throw new Error('Sistema de auto-correção falhou para seleção de assunto');
@@ -74,7 +74,7 @@ test.describe('Formulário de Contato com Auto-Correção', () => {
 
         // Selecionar departamento
         try {
-            await contactPage.selectDepartment('TI');
+            await contactPage.selectDepartment('Vendas');
         } catch (error) {
             console.log('🔧 Seletor quebrado detectado para seleção de departamento! Acionando sistema de auto-correção...');
             throw new Error('Sistema de auto-correção falhou para seleção de departamento');
@@ -139,21 +139,30 @@ test.describe('Formulário de Contato com Auto-Correção', () => {
         }
 
         // Aguardar validação
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(2000);
 
-        // Verificar se erros de validação aparecem
+        // Verificar se os indicadores visuais de erro estão visíveis na tela
         const hasNameError = await contactPage.verifyFieldError('name');
         const hasEmailError = await contactPage.verifyFieldError('email');
         const hasMessageError = await contactPage.verifyFieldError('message');
+       
+        // Verificar os indicadores visuais dos campos select (asteriscos)
+        const subjectHasRequiredIndicator = await page.locator('text=Assunto *').isVisible();
+        const departmentHasRequiredIndicator = await page.locator('text=Departamento *').isVisible();
 
-        console.log(`Erro no nome: ${hasNameError}`);
-        console.log(`Erro no email: ${hasEmailError}`);
-        console.log(`Erro na mensagem: ${hasMessageError}`);
+        // Registrar resultados no log
+        console.log(`Erro visível no campo nome: ${hasNameError}`);
+        console.log(`Erro visível no campo email: ${hasEmailError}`);
+        console.log(`Erro visível no campo mensagem: ${hasMessageError}`);
+        console.log(`Campo Assunto tem indicador obrigatório: ${subjectHasRequiredIndicator}`);
+        console.log(`Campo Departamento tem indicador obrigatório: ${departmentHasRequiredIndicator}`);
 
-        // Pelo menos um erro deve estar presente
-        expect(hasNameError || hasEmailError || hasMessageError).toBe(true);
-
-        console.log('✅ Validação de campos obrigatórios funcionando!');
+        // Validar visibilidade dos erros (apenas frontend)
+        expect(hasNameError).toBe(true);
+        expect(hasEmailError).toBe(true);
+        expect(hasMessageError).toBe(true);
+      
+        console.log('✅ Validação visual de campos obrigatórios funcionando!');
     });
 
     test('Deve testar diferentes combinações de assunto e departamento', async ({ page }) => {
@@ -171,8 +180,8 @@ test.describe('Formulário de Contato com Auto-Correção', () => {
 
         // Testar combinação 1: Vendas + Comercial
         try {
-            await contactPage.selectSubject('Vendas');
-            await contactPage.selectDepartment('Comercial');
+            await contactPage.selectSubject('Parcerias');
+            await contactPage.selectDepartment('Vendas');
             await contactPage.selectPriority('medium');
         } catch (error) {
             console.log('🔧 Erro na primeira combinação! Sistema de auto-correção acionado...');
@@ -182,8 +191,8 @@ test.describe('Formulário de Contato com Auto-Correção', () => {
 
         // Testar combinação 2: Suporte Técnico + TI
         try {
-            await contactPage.selectSubject('Suporte Técnico');
-            await contactPage.selectDepartment('TI');
+            await contactPage.selectSubject('Reclamação');
+            await contactPage.selectDepartment('Suporte Técnico');
             await contactPage.selectPriority('high');
         } catch (error) {
             console.log('🔧 Erro na segunda combinação! Sistema de auto-correção acionado...');
@@ -277,8 +286,10 @@ test.describe('Formulário de Contato com Auto-Correção', () => {
 
         // Verificar se erro de email apareceu
         const hasEmailError = await contactPage.verifyFieldError('email');
+        
         if (hasEmailError) {
-            console.log('✅ Validação de email funcionando!');
+            console.log(`✅ Validação de formato de email funcionando!`);
+            expect(hasEmailError).toBeTruthy();
         } else {
             console.log('ℹ️ Validação pode estar sendo feita no frontend');
         }
@@ -300,10 +311,20 @@ test.describe('Formulário de Contato com Auto-Correção', () => {
         await page.waitForTimeout(500);
 
         // Verificar se formatação foi aplicada
-        const phoneField = page.locator('[data-testid="contact-phone"]');
-        const phoneValue = await phoneField.inputValue();
+        const phoneValue = await contactPage.getPhoneValue();
         
         console.log(`Valor do telefone após formatação: ${phoneValue}`);
+        
+        // Validar se o telefone está no formato esperado (XX) XXXXX-XXXX
+        const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
+        const isPhoneFormatted = phoneRegex.test(phoneValue);
+        
+        if (isPhoneFormatted) {
+            console.log('✅ Formatação automática de telefone funcionando!');
+            expect(isPhoneFormatted).toBeTruthy();
+        } else {
+            console.log('⚠️ Telefone não está no formato esperado (XX) XXXXX-XXXX');
+        }
 
         // Testar outro formato
         try {

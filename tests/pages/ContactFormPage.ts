@@ -1,4 +1,4 @@
-// File: tests/pages/ContactFormPage.ts
+        // File: tests/pages/ContactFormPage.ts
 
 import { type Page } from '@playwright/test';
 const { SelfHealingTestRunner } = require('../../agent/self_healing_runner.js');
@@ -19,7 +19,7 @@ export class ContactFormPage {
         priorityHigh: '[data-testid="priority-high"]',
         contactMethodEmail: '[data-testid="contact-method-email"]',
         contactMethodPhone: '[data-testid="contact-method-phone"]',
-        submitButton: '[data-testid="contact-submit"]',
+        submitButton: '[data-testid="contact-submit-button"]',
         backToDashboardButton: '[data-testid="back-to-dashboard-button"]',
         successMessage: '[data-testid="contact-success"]',
         nameError: '[data-testid="name-error"]',
@@ -60,7 +60,7 @@ export class ContactFormPage {
             const healedSelector = await this.runner.healBrokenSelector(
                 'nameInput',
                 this.selectors.nameInput,
-                'Campo de texto para nome no formulário de contato com label "Nome Completo"'
+                'Campo de texto para nome no formulário de contato com label "Seu nome completo"'
             );
             if (healedSelector) {
                 this.updateSelector('nameInput', healedSelector);
@@ -79,7 +79,7 @@ export class ContactFormPage {
             const healedSelector = await this.runner.healBrokenSelector(
                 'emailInput',
                 this.selectors.emailInput,
-                'Campo de texto para email no formulário de contato com label "Email"'
+                'Campo de texto para email no formulário de contato com label "seu@email.com"'
             );
             if (healedSelector) {
                 this.updateSelector('emailInput', healedSelector);
@@ -118,7 +118,7 @@ export class ContactFormPage {
             const healedSelector = await this.runner.healBrokenSelector(
                 'subjectSelect',
                 this.selectors.subjectSelect,
-                'Seletor dropdown para escolher assunto da mensagem com opções como Suporte Técnico, Vendas, etc.'
+                'Seletor dropdown para escolher assunto da mensagem com opções como Dúvida sobre produto, problema técnico, etc.'
             );
             if (healedSelector) {
                 this.updateSelector('subjectSelect', healedSelector);
@@ -139,7 +139,7 @@ export class ContactFormPage {
             const healedSelector = await this.runner.healBrokenSelector(
                 'departmentSelect',
                 this.selectors.departmentSelect,
-                'Dropdown para assunto da mensagem localizado abaixo do campo de telefone, com label "Assunto" e que contém opções como "Suporte Técnico" e "Vendas'
+                'Dropdown para assunto da mensagem localizado abaixo do campo de telefone, com label "selecione o departamento" e que contém opções como "Suporte Técnico" e "Vendas'
             );
             if (healedSelector) {
                 this.updateSelector('departmentSelect', healedSelector);
@@ -264,6 +264,27 @@ export class ContactFormPage {
             return await this.page.locator(errorSelector).isVisible();
         } catch (error) {
             return false;
+        }
+    }
+
+    // Obter texto de mensagem de erro específica
+    async getFieldErrorText(field: 'name' | 'email' | 'phone' | 'subject' | 'department' | 'message'): Promise<string | null> {
+        try {
+            const errorSelector = this.selectors[`${field}Error` as keyof typeof this.selectors];
+            return await this.page.locator(errorSelector).textContent();
+        } catch (error) {
+            console.log(` Erro ao obter texto de erro para o campo ${field}: ${error}`);
+            return null;
+        }
+    }
+
+    // Obter valor atual do campo telefone
+    async getPhoneValue(): Promise<string> {
+        try {
+            return await this.page.locator(this.selectors.phoneInput).inputValue();
+        } catch (error) {
+            console.log(` Erro ao obter valor do campo telefone: ${error}`);
+            return '';
         }
     }
 
