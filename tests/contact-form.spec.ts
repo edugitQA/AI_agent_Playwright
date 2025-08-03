@@ -22,7 +22,7 @@ test.describe('Formulário de Contato com Auto-Correção', () => {
         contactPage = new ContactFormPage(page);
         
         // Login primeiro para acessar a área protegida
-        await page.goto('http://localhost:5173');
+        await page.goto('/');
         await page.fill('[data-testid="username-input"]', 'admin');
         await page.fill('[data-testid="password-input"]', 'password123');
         await page.click('[data-testid="login-button"]');

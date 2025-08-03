@@ -68,7 +68,7 @@ jobs:
         # Certifique-se de criar este arquivo requirements.txt com as dependências do seu agente
 
       - name: Cache instalação do Playwright
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: ${{ needs.setup.outputs.cache-key }}
@@ -97,7 +97,7 @@ jobs:
           cache: 'pip'
 
       - name: Restaurar cache do Playwright
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: ${{ needs.setup.outputs.cache-key }}
@@ -149,13 +149,12 @@ jobs:
           echo "Branch: ${{ github.ref }}" >> test-artifacts/execution-info.txt
           echo "Commit: ${{ github.sha }}" >> test-artifacts/execution-info.txt
 
-      - name: Gerar relatório detalhado
+      - name: Gerar relatório do Playwright
         if: always()
         run: |
-          node .github/scripts/generate-agent-report.js
           npx playwright show-report
           
-      - name: Salvar histórico de seletores corrigidos
+      - name: Salvar logs e histórico
         if: always()
         run: |
           # Criar diretório para histórico se não existir
@@ -163,13 +162,10 @@ jobs:
           
           # Salvar cache de seletores com timestamp para histórico
           cp -f logs/selector_cache.json .history/selector_cache_$(date +"%Y%m%d_%H%M%S").json || true
-          
-          # Compilar histórico de mudanças para análise de tendências
-          node .github/scripts/compile-selector-history.js || true
 
       - name: Upload artefatos
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ github.run_id }}
           path: |
