@@ -24,10 +24,9 @@ on:
         default: 'https://front-test-automation.onrender.com/'
 
 jobs:
-  setup:
+  test:
     runs-on: ubuntu-latest
-    outputs:
-      cache-key: ${{ steps.cache-key.outputs.key }}
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,80 +37,44 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Gerar chave de cache
-        id: cache-key
-        run: echo "key=playwright-deps-${{ hashFiles('package-lock.json') }}-$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
-
-  preparar-ambiente:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Instalar dependências do projeto
-        run: npm ci
+      - name: Instalar dependências
+        run: |
+          # Limpar cache do npm em caso de problemas
+          npm cache clean --force
+          # Instalar dependências
+          npm ci
+          # Verificar se @playwright/test foi instalado corretamente
+          npm list @playwright/test
+          # Verificar estrutura node_modules
+          ls -la node_modules/@playwright/ || echo "Diretório @playwright não encontrado"
 
       - name: Instalar browsers do Playwright
-        run: npx playwright install --with-deps chromium firefox webkit
-
-      - name: Instalar dependências Python para o agente
         run: |
-          python -m pip install --upgrade pip
-          pip install -r agent/requirements.txt
-        # Certifique-se de criar este arquivo requirements.txt com as dependências do seu agente
-
-      - name: Cache instalação do Playwright
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ needs.setup.outputs.cache-key }}
-          restore-keys: ${{ needs.setup.outputs.cache-key }}
-
-  aplicacao-e-testes:
-    needs: [setup, preparar-ambiente]
-    runs-on: ubuntu-latest
-    
-    # Removido o service container pois a aplicação agora está no Vercel
-    
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
+          # Primeiro tentar instalar os browsers
+          npx playwright install --with-deps chromium
+          
+          # Se houver problemas, tentar reinstalar playwright
+          if ! npx playwright --version; then
+            echo "Problema com Playwright, tentando reinstalar..."
+            npm uninstall @playwright/test
+            npm install @playwright/test@^1.54.1
+            npx playwright install --with-deps chromium
+          fi
 
       - name: Configurar Python para o agente
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
 
-      - name: Restaurar cache do Playwright
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ needs.setup.outputs.cache-key }}
+      - name: Instalar dependências Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install langgraph langchain langchain-openai openai beautifulsoup4
 
       - name: Verificar URL da aplicação
-        id: app-url
         run: |
-          if [ -n "${{ github.event.inputs.app_url }}" ]; then
-            echo "APP_URL=${{ github.event.inputs.app_url }}" >> $GITHUB_ENV
-            echo "Usando URL fornecida: ${{ github.event.inputs.app_url }}"
-          else
-            echo "APP_URL=https://front-test-automation.onrender.com/" >> $GITHUB_ENV
-            echo "Usando URL padrão Render"
-          fi
+          echo "APP_URL=https://front-test-automation.onrender.com/" >> $GITHUB_ENV
+          echo "Usando URL da aplicação: https://front-test-automation.onrender.com/"
 
       - name: Verificar conectividade com a aplicação
         run: |
@@ -122,46 +85,25 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           PLAYWRIGHT_TEST_BASE_URL: ${{ env.APP_URL }}
-          DEBUG_MODE: ${{ github.event.inputs.debug_mode == 'true' && '--debug' || '' }}
-          TEST_FILTER: ${{ github.event.inputs.test_filter }}
         run: |
           echo "Executando testes com o agente de auto-correção..."
+          echo "URL da aplicação: $APP_URL"
           
-          # Configurar variáveis do agente
-          export AGENT_LOG_LEVEL=DEBUG
-          export AGENT_SELECTOR_CACHE=true
-          export AGENT_RETRY_ATTEMPTS=3
-          export AGENT_HISTORY_ENABLED=true
+          # Debug: Verificar se os arquivos de teste existem
+          ls -la tests/
+          echo "Verificando se os testes existem:"
+          test -f tests/contact-form.spec.ts && echo "✓ contact-form.spec.ts encontrado" || echo "✗ contact-form.spec.ts não encontrado"
+          test -f tests/login.spec.ts && echo "✓ login.spec.ts encontrado" || echo "✗ login.spec.ts não encontrado"
+          
+          # Debug: Verificar configuração do Playwright
+          echo "Verificando configuração do Playwright:"
+          npx playwright --version
+          
+          # Debug: Verificar se o módulo pode ser importado
+          node -e "try { require('@playwright/test'); console.log('✓ @playwright/test importado com sucesso'); } catch(e) { console.log('✗ Erro ao importar @playwright/test:', e.message); }"
           
           # Executar apenas os testes contact-form.spec.ts e login.spec.ts
-          npx playwright test tests/contact-form.spec.ts tests/login.spec.ts $DEBUG_MODE
-
-      - name: Capturar snapshots para análise
-        if: always()
-        run: |
-          mkdir -p test-artifacts/snapshots
-          cp -r dom_snapshots/* test-artifacts/snapshots/ || true
-          cp -r logs/* test-artifacts/logs/ || true
-          
-          # Salvar informações do teste para histórico
-          echo "Data de execução: $(date)" > test-artifacts/execution-info.txt
-          echo "URL da aplicação: $APP_URL" >> test-artifacts/execution-info.txt
-          echo "Branch: ${{ github.ref }}" >> test-artifacts/execution-info.txt
-          echo "Commit: ${{ github.sha }}" >> test-artifacts/execution-info.txt
-
-      - name: Gerar relatório do Playwright
-        if: always()
-        run: |
-          npx playwright show-report
-          
-      - name: Salvar logs e histórico
-        if: always()
-        run: |
-          # Criar diretório para histórico se não existir
-          mkdir -p .history
-          
-          # Salvar cache de seletores com timestamp para histórico
-          cp -f logs/selector_cache.json .history/selector_cache_$(date +"%Y%m%d_%H%M%S").json || true
+          npx playwright test tests/contact-form.spec.ts tests/login.spec.ts --reporter=line
 
       - name: Upload artefatos
         if: always()
@@ -170,23 +112,5 @@ jobs:
           name: test-results-${{ github.run_id }}
           path: |
             test-results/
-            test-artifacts/
             playwright-report/
             logs/
-            dom_snapshots/
-            .history/
-            
-      - name: Notificar sobre correções de seletores
-        if: always()
-        run: |
-          # Verificar se houve correções de seletores
-          if [ -f logs/selector_cache.json ]; then
-            FIXED_SELECTORS=$(grep -c "healed" logs/selector_cache.json || echo "0")
-            if [ "$FIXED_SELECTORS" -gt "0" ]; then
-              echo "::warning::O agente corrigiu $FIXED_SELECTORS seletores quebrados! Verifique o relatório para detalhes."
-            else
-              echo "Nenhum seletor precisou ser corrigido nesta execução."
-            fi
-          else
-            echo "Arquivo de cache de seletores não encontrado."
-          fi
