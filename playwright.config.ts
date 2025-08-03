@@ -35,8 +35,8 @@ export default defineConfig({
   
   // Configurações globais para todos os testes
   use: {
-    // URL base da aplicação
-    baseURL: 'http://localhost:5173',
+    // URL base da aplicação (usa variável de ambiente BASE_URL ou fallback para localhost)
+    baseURL: process.env.BASE_URL || 'http://localhost:5173',
     
     // Timeout para ações individuais (30 segundos)
     actionTimeout: parseInt(process.env.PLAYWRIGHT_TIMEOUT || '30000'),

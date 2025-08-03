@@ -65,12 +65,16 @@ jobs:
           pip install -r requirements.txt
 
       - name: Verificar URL da aplicação
+        id: set_url
         run: |
-          echo "APP_URL=https://front-test-automation.onrender.com/" >> $GITHUB_ENV
-          echo "Usando URL da aplicação: https://front-test-automation.onrender.com/"
+          APP_URL="https://front-test-automation.onrender.com/"
+          echo "APP_URL=$APP_URL" >> $GITHUB_ENV
+          echo "app_url=$APP_URL" >> $GITHUB_OUTPUT
+          echo "Usando URL da aplicação: $APP_URL"
 
       - name: Verificar conectividade com a aplicação
         run: |
+          APP_URL="https://front-test-automation.onrender.com/"
           echo "Verificando conectividade com $APP_URL..."
           curl --retry 3 --retry-delay 5 --fail $APP_URL || (echo "⚠️ Aviso: Não foi possível acessar a aplicação. Os testes podem falhar." && exit 0)
 
@@ -78,14 +82,14 @@ jobs:
         env:
           CI: true
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          PLAYWRIGHT_TEST_BASE_URL: ${{ env.APP_URL }}
+          BASE_URL: "https://front-test-automation.onrender.com/"
         run: |
           echo "Executando testes com o agente de auto-correção..."
-          echo "URL da aplicação: $APP_URL"
+          echo "URL da aplicação: https://front-test-automation.onrender.com/"
           echo "Ambiente CI: $CI"
           
-          # Executar apenas os testes contact-form.spec.ts e login.spec.ts
-          npx playwright test tests/contact-form.spec.ts tests/login.spec.ts --reporter=line
+          # Executar os testes com a URL remota explicitamente
+          npx playwright test tests/contact-form.spec.ts tests/login.spec.ts --reporter=line --project=chromium --config=playwright.config.ts
 
       - name: Upload artefatos
         if: always()
