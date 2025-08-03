@@ -45,21 +45,14 @@ jobs:
           npm ci
           # Verificar se @playwright/test foi instalado corretamente
           npm list @playwright/test
-          # Verificar estrutura node_modules
-          ls -la node_modules/@playwright/ || echo "Diretório @playwright não encontrado"
 
       - name: Instalar browsers do Playwright
         run: |
           # Primeiro tentar instalar os browsers
           npx playwright install --with-deps chromium
           
-          # Se houver problemas, tentar reinstalar playwright
-          if ! npx playwright --version; then
-            echo "Problema com Playwright, tentando reinstalar..."
-            npm uninstall @playwright/test
-            npm install @playwright/test@^1.54.1
-            npx playwright install --with-deps chromium
-          fi
+          # Verificar instalação
+          npx playwright --version
 
       - name: Configurar Python para o agente
         uses: actions/setup-python@v5
@@ -69,7 +62,7 @@ jobs:
       - name: Instalar dependências Python
         run: |
           python -m pip install --upgrade pip
-          pip install langgraph langchain langchain-openai openai beautifulsoup4
+          pip install -r requirements.txt
 
       - name: Verificar URL da aplicação
         run: |
@@ -83,24 +76,13 @@ jobs:
 
       - name: Executar testes com o agente de auto-correção
         env:
+          CI: true
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           PLAYWRIGHT_TEST_BASE_URL: ${{ env.APP_URL }}
         run: |
           echo "Executando testes com o agente de auto-correção..."
           echo "URL da aplicação: $APP_URL"
-          
-          # Debug: Verificar se os arquivos de teste existem
-          ls -la tests/
-          echo "Verificando se os testes existem:"
-          test -f tests/contact-form.spec.ts && echo "✓ contact-form.spec.ts encontrado" || echo "✗ contact-form.spec.ts não encontrado"
-          test -f tests/login.spec.ts && echo "✓ login.spec.ts encontrado" || echo "✗ login.spec.ts não encontrado"
-          
-          # Debug: Verificar configuração do Playwright
-          echo "Verificando configuração do Playwright:"
-          npx playwright --version
-          
-          # Debug: Verificar se o módulo pode ser importado
-          node -e "try { require('@playwright/test'); console.log('✓ @playwright/test importado com sucesso'); } catch(e) { console.log('✗ Erro ao importar @playwright/test:', e.message); }"
+          echo "Ambiente CI: $CI"
           
           # Executar apenas os testes contact-form.spec.ts e login.spec.ts
           npx playwright test tests/contact-form.spec.ts tests/login.spec.ts --reporter=line

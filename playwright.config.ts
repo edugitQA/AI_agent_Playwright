@@ -91,13 +91,17 @@ export default defineConfig({
     // },
   ],
 
-  // Configuração do servidor de desenvolvimento
-  webServer: {
-    command: 'cd sample-react-app && pnpm run dev --host',
-    port: 5173,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000, // 2 minutos para iniciar o servidor
-  },
+  // Configuração do servidor de desenvolvimento (desabilitado para CI)
+  // O webServer é usado apenas para desenvolvimento local
+  // Em CI, usamos a URL do Render diretamente via baseURL
+  ...(process.env.CI ? {} : {
+    webServer: {
+      command: 'cd sample-react-app && npm run dev --host',
+      port: 5173,
+      reuseExistingServer: true,
+      timeout: 120000, // 2 minutos para iniciar o servidor
+    }
+  }),
 
   // Diretório de saída para artifacts
   outputDir: 'test-results/artifacts',
