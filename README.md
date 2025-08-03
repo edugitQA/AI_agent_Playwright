@@ -102,6 +102,10 @@ A solução foi projetada para resolver um dos maiores desafios em testes E2E: a
 ├── 📁 test-results/            # 📈 Relatórios e resultados
 ├── 📄 playwright.config.ts     # 🎭 Configuração do Playwright
 ├── 📄 package.json             # 📦 Dependências Node.js
+├── 📄 requirements.txt         # 🐍 Dependências Python
+├── 📄 requirements-dev.txt     # 🛠️ Dependências de desenvolvimento
+├── 📄 install.sh               # 🚀 Script de instalação automatizada
+├── 📄 .env.example             # 🔑 Exemplo de variáveis de ambiente
 └── 📄 guia-escrita-test.md     # 📖 Guia para escrever testes
 ```
 
@@ -118,6 +122,26 @@ Certifique-se de ter os seguintes softwares instalados em seu ambiente:
 
 ## 🚀 **Configuração do Ambiente**
 
+### 🚀 **Instalação Rápida (Recomendada)**
+
+Execute o script de instalação automatizada que configura todo o ambiente:
+
+```bash
+# Torna o script executável e executa
+chmod +x install.sh && ./install.sh
+```
+
+O script irá:
+- ✅ Verificar versões do Python e Node.js
+- ✅ Criar ambiente virtual Python
+- ✅ Instalar todas as dependências Python
+- ✅ Instalar dependências Node.js e navegadores Playwright
+- ✅ Configurar aplicação React de exemplo
+- ✅ Criar arquivo `.env` de exemplo
+- ✅ Criar diretórios necessários
+
+### 🛠️ **Instalação Manual (Avançada)**
+
 ### 🗂️ **1. Clonar o Repositório**
 
 ```bash
@@ -133,6 +157,13 @@ ls -la
 
 ### 🐍 **2. Configurar Ambiente Python (Agente IA)**
 
+**Opção A: Instalação Automática (Recomendada)**
+```bash
+# Execute o script de instalação automatizada
+./install.sh
+```
+
+**Opção B: Instalação Manual**
 ```bash
 # Crie um ambiente virtual Python isolado
 python3 -m venv venv
@@ -146,7 +177,10 @@ venv\Scripts\activate             # 🪟 Windows
 pip install --upgrade pip
 
 # Instale as dependências do agente IA
-pip install langgraph openai beautifulsoup4 lxml langchain-openai
+pip install -r requirements.txt
+
+# Para desenvolvimento (opcional)
+pip install -r requirements-dev.txt
 
 # Verifique a instalação
 python -c "import langgraph, openai; print('✅ Dependências Python instaladas com sucesso!')"

@@ -54,8 +54,8 @@ export default defineConfig({
     trace: 'retain-on-failure',
     
     // Modo headless (forçado para true no ambiente sandbox)
-    headless: false, // Alterado para permitir visualização em tempo real
-    
+    headless: true, // Alterado para permitir visualização em tempo real
+
     // Viewport padrão
     viewport: { width: 1280, height: 720 },
     
@@ -110,9 +110,7 @@ export default defineConfig({
   expect: {
     // Timeout para assertions
     timeout: 10000,
-    
-    // Threshold para comparação de screenshots
-    threshold: 0.2,
+    // Para threshold de screenshots, configure em cada chamada de expect(page).toHaveScreenshot({ threshold: ... })
   },
 });
 

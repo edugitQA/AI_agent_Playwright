@@ -94,6 +94,10 @@ function App() {
     return <MultiStepForm onBackToDashboard={backToDashboard} />
   }
 
+  if (currentView === 'multistep' && isLoggedIn) {
+    return <MultiStepForm onBackToDashboard={backToDashboard} />
+  }
+
   if (isLoggedIn && currentView === 'welcome') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">

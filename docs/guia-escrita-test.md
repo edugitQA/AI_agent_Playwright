@@ -15,11 +15,13 @@ O Quê? Crie um arquivo de classe (ex: LoginPage.ts) para cada página ou compon
 Por Quê? Isso nos dá um "mapa" centralizado da página. Quando o agente de IA corrige um seletor quebrado, ele atualiza esse mapa em um único lugar. O resto do teste, que usa o mapa, passa a funcionar com o novo seletor sem precisar de nenhuma alteração.
 
 Regra #2: Proteja Cada Ação com um "Guarda-Costas" (try...catch)
-Cada interação crítica com um elemento da página (clicar, preencher, etc.) deve ser "protegida" para que possamos lidar com falhas.
+Cada interação crítica com um elemento da página (clicar, preencher, etc.) deve ser "protegida" para que possamos lidar com falhas de forma inteligente.
 
-O Quê? Dentro do seu Page Object, crie métodos para cada ação (ex: fillEmail(), clickLoginButton()). Envolva a lógica do Playwright dentro de um bloco try...catch.
+O Quê? Dentro do seu Page Object, crie métodos para cada ação (ex: `fillEmail()`, `clickLoginButton()`). Envolva a lógica do Playwright dentro de um bloco `try...catch`.
 
-Por Quê? O bloco try tenta executar a ação. Se ele falhar porque o seletor não foi encontrado, o bloco catch é acionado. É dentro do catch que nós chamamos o nosso agente de IA para fazer a correção.
+Por Quê? O bloco `try` tenta executar a ação. Se ele falhar porque o seletor não foi encontrado, o bloco `catch` é acionado. É dentro do `catch` que nós chamamos o nosso agente de IA para fazer a correção.
+
+**Nota importante:** Após a tentativa de correção, é crucial verificar se o agente de IA obteve sucesso. Se a correção falhar, o teste deve ser interrompido com uma mensagem de erro clara. Isso evita que o teste continue em um estado inconsistente.
 
 Regra #3: Descreva os Elementos como se Fosse para um Humano
 Esta é a regra mais importante para o sucesso do agente. A qualidade da correção depende diretamente da qualidade da descrição que você fornece.

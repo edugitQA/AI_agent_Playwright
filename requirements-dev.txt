@@ -1,0 +1,29 @@
+# Playwright Agent - Development Requirements
+# Dependências adicionais para desenvolvimento e debugging
+
+# === Base Requirements ===
+-r requirements.txt
+
+# === Development Tools ===
+pytest==8.3.3
+pytest-asyncio==0.24.0
+pytest-mock==3.14.0
+
+# === Code Quality ===
+black==24.10.0
+flake8==7.1.1
+mypy==1.13.0
+isort==5.13.2
+
+# === Debugging & Profiling ===
+ipython==8.29.0
+ipdb==0.13.13
+memory-profiler==0.61.0
+
+# === Documentation ===
+sphinx==8.1.3
+sphinx-rtd-theme==3.0.2
+
+# === Jupyter (opcional para análise) ===
+jupyter==1.1.1
+notebook==7.3.1
