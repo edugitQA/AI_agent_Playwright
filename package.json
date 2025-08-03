@@ -6,7 +6,18 @@
   "directories": {
     "test": "tests"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test",
+    "test:debug": "playwright test --debug",
+    "start:app": "cd sample-react-app && npm run dev",
+    "install:app": "cd sample-react-app && npm install",
+    "report": "playwright show-report",
+    "agent-report": "node scripts/generate-agent-report.js",
+    "history-report": "node scripts/compile-selector-history.js",
+    "all-reports": "npm run agent-report && npm run history-report && npm run report",
+    "setup:ci": "node scripts/setup-ci-environment.js",
+    "simulate:breaks": "node scripts/simulate-breaks.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

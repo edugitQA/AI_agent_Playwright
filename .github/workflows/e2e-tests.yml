@@ -1,0 +1,196 @@
+name: E2E Tests com Auto-Correção
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  schedule:
+    # Execução programada às 03:00 todos os dias
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      debug_mode:
+        description: 'Executar em modo debug'
+        required: false
+        default: 'false'
+      test_filter:
+        description: 'Filtro de testes (ex: contact-form.spec.ts)'
+        required: false
+        default: ''
+      app_url:
+        description: 'URL da aplicação (padrão: produção)'
+        required: false
+        default: 'https://front-test-automation.onrender.com/'
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-key.outputs.key }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Gerar chave de cache
+        id: cache-key
+        run: echo "key=playwright-deps-${{ hashFiles('package-lock.json') }}-$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+  preparar-ambiente:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências do projeto
+        run: npm ci
+
+      - name: Instalar browsers do Playwright
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Instalar dependências Python para o agente
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r agent/requirements.txt
+        # Certifique-se de criar este arquivo requirements.txt com as dependências do seu agente
+
+      - name: Cache instalação do Playwright
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ needs.setup.outputs.cache-key }}
+          restore-keys: ${{ needs.setup.outputs.cache-key }}
+
+  aplicacao-e-testes:
+    needs: [setup, preparar-ambiente]
+    runs-on: ubuntu-latest
+    
+    # Removido o service container pois a aplicação agora está no Vercel
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Configurar Python para o agente
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Restaurar cache do Playwright
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: Verificar URL da aplicação
+        id: app-url
+        run: |
+          if [ -n "${{ github.event.inputs.app_url }}" ]; then
+            echo "APP_URL=${{ github.event.inputs.app_url }}" >> $GITHUB_ENV
+            echo "Usando URL fornecida: ${{ github.event.inputs.app_url }}"
+          else
+            echo "APP_URL=https://front-test-automation.onrender.com/" >> $GITHUB_ENV
+            echo "Usando URL padrão Render"
+          fi
+
+      - name: Verificar conectividade com a aplicação
+        run: |
+          echo "Verificando conectividade com $APP_URL..."
+          curl --retry 3 --retry-delay 5 --fail $APP_URL || (echo "⚠️ Aviso: Não foi possível acessar a aplicação. Os testes podem falhar." && exit 0)
+
+      - name: Executar testes com o agente de auto-correção
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PLAYWRIGHT_TEST_BASE_URL: ${{ env.APP_URL }}
+          DEBUG_MODE: ${{ github.event.inputs.debug_mode == 'true' && '--debug' || '' }}
+          TEST_FILTER: ${{ github.event.inputs.test_filter }}
+        run: |
+          echo "Executando testes com o agente de auto-correção..."
+          
+          # Configurar variáveis do agente
+          export AGENT_LOG_LEVEL=DEBUG
+          export AGENT_SELECTOR_CACHE=true
+          export AGENT_RETRY_ATTEMPTS=3
+          export AGENT_HISTORY_ENABLED=true
+          
+          # Executar apenas os testes contact-form.spec.ts e login.spec.ts
+          npx playwright test tests/contact-form.spec.ts tests/login.spec.ts $DEBUG_MODE
+
+      - name: Capturar snapshots para análise
+        if: always()
+        run: |
+          mkdir -p test-artifacts/snapshots
+          cp -r dom_snapshots/* test-artifacts/snapshots/ || true
+          cp -r logs/* test-artifacts/logs/ || true
+          
+          # Salvar informações do teste para histórico
+          echo "Data de execução: $(date)" > test-artifacts/execution-info.txt
+          echo "URL da aplicação: $APP_URL" >> test-artifacts/execution-info.txt
+          echo "Branch: ${{ github.ref }}" >> test-artifacts/execution-info.txt
+          echo "Commit: ${{ github.sha }}" >> test-artifacts/execution-info.txt
+
+      - name: Gerar relatório detalhado
+        if: always()
+        run: |
+          node .github/scripts/generate-agent-report.js
+          npx playwright show-report
+          
+      - name: Salvar histórico de seletores corrigidos
+        if: always()
+        run: |
+          # Criar diretório para histórico se não existir
+          mkdir -p .history
+          
+          # Salvar cache de seletores com timestamp para histórico
+          cp -f logs/selector_cache.json .history/selector_cache_$(date +"%Y%m%d_%H%M%S").json || true
+          
+          # Compilar histórico de mudanças para análise de tendências
+          node .github/scripts/compile-selector-history.js || true
+
+      - name: Upload artefatos
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-${{ github.run_id }}
+          path: |
+            test-results/
+            test-artifacts/
+            playwright-report/
+            logs/
+            dom_snapshots/
+            .history/
+            
+      - name: Notificar sobre correções de seletores
+        if: always()
+        run: |
+          # Verificar se houve correções de seletores
+          if [ -f logs/selector_cache.json ]; then
+            FIXED_SELECTORS=$(grep -c "healed" logs/selector_cache.json || echo "0")
+            if [ "$FIXED_SELECTORS" -gt "0" ]; then
+              echo "::warning::O agente corrigiu $FIXED_SELECTORS seletores quebrados! Verifique o relatório para detalhes."
+            else
+              echo "Nenhum seletor precisou ser corrigido nesta execução."
+            fi
+          else
+            echo "Arquivo de cache de seletores não encontrado."
+          fi
