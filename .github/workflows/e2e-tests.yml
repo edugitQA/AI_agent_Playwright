@@ -5,14 +5,12 @@ on:
     branches: [master, main]
   pull_request:
     branches: [master, main]
-  schedule:
-    - cron: '0 3 * * *'
   workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15 # Adicionado um timeout para o job inteiro
+    timeout-minutes: 15
 
     steps:
       - name: 1. Checkout do Código
@@ -22,48 +20,39 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm' # Habilitar cache para acelerar instalações
+          cache: 'npm'
 
-      - name: 3. Instalar Dependências (Node.js)
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium # Instalar apenas o chromium para agilizar
+      - name: 3. Instalar Dependências (Projeto Principal)
+        run: npm ci
 
-      - name: 4. Configurar Python para o Agente de IA
+      # --- NOVO PASSO ADICIONADO ---
+      - name: 4. Instalar Dependências (Aplicação React)
+        run: npm ci --prefix sample-react-app
+
+      - name: 5. Instalar Navegadores Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: 6. Configurar Python para o Agente de IA
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip' # Habilitar cache para o pip
+          cache: 'pip'
 
-      - name: 5. Instalar Dependências (Python)
+      - name: 7. Instalar Dependências (Python)
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 6. Construir e Iniciar a Aplicação React em Background
-        run: |
-          npm run build --prefix sample-react-app
-          npm run preview --prefix sample-react-app &
-        env:
-          # A porta 4173 é a padrão do `npm run preview` do Vite.
-          # O `playwright.config.ts` já está configurado para usar `http://localhost:5173`,
-          # mas o preview do vite por padrão usa a 4173. Vamos ajustar o BASE_URL para refletir isso.
-          BASE_URL: http://localhost:4173
-
-      - name: 7. Executar Testes com o Agente de Auto-Correção
+      - name: 8. Executar Testes com o Agente de Auto-Correção
         env:
           CI: true
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          # Usamos a porta padrão do `vite preview`
-          BASE_URL: http://localhost:4173
         run: |
-          echo "Executando testes na URL: $BASE_URL"
-          # Executa todos os testes. O agente será acionado automaticamente
-          # pelo `self_healing_runner.js` quando um seletor falhar.
+          # O Playwright agora iniciará o webServer automaticamente antes dos testes
           npx playwright test
 
-      - name: 8. Upload dos Artefatos de Teste
-        if: always() # Garante que os artefatos sejam salvos mesmo se os testes falharem
+      - name: 9. Upload dos Artefatos de Teste
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-artifacts-${{ github.run_id }}
@@ -72,4 +61,4 @@ jobs:
             playwright-report/
             logs/
             dom_snapshots/
-          retention-days: 7 # Guardar os artefatos por 7 dias
+          retention-days: 7
