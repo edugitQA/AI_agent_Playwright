@@ -94,8 +94,8 @@ export default defineConfig({
   // O webServer é usado apenas para desenvolvimento local
   // Em CI, usamos a URL do Render diretamente via baseURL
 webServer: {
-  // Altere esta linha para usar pnpm
-  command: 'pnpm --filter sample-react-app dev',
+  // Usamos 'pnpm dev' com o prefixo para a pasta da aplicação
+  command: 'pnpm --prefix sample-react-app dev',
   url: 'http://localhost:5173',
   reuseExistingServer: !process.env.CI,
   timeout: 120000,
