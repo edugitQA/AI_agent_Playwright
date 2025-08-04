@@ -319,11 +319,12 @@ ELEMENTOS SIMILARES ENCONTRADOS NO DOM:
 {json.dumps(similar_elements, indent=2, ensure_ascii=False)}
 
 INSTRUÇÕES:
-1. Analise os elementos similares encontrados
-2. Identifique qual elemento mais provavelmente corresponde à descrição
-3. Sugira 3-5 seletores alternativos em ordem de prioridade
-4. Para cada seletor, forneça uma explicação do porquê é uma boa opção
-5. Priorize seletores estáveis (data-testid > text > CSS classes > XPath)
+1. Analise os elementos similares encontrados.
+2. Identifique qual elemento mais provavelmente corresponde à descrição.
+3. Sugira 3-5 seletores alternativos em ordem de prioridade.
+4. Para cada seletor, forneça uma explicação do porquê é uma boa opção.
+5. Priorize seletores estáveis (data-testid > text > CSS classes > XPath).
+6. **IMPORTANTE: Evite seletores excessivamente genéricos como 'body' ou '#root', a menos que seja a única opção possível.**
 
 FORMATO DE RESPOSTA (JSON):
 {{
