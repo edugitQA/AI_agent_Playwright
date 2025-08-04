@@ -91,17 +91,13 @@ export default defineConfig({
     // },
   ],
 
-  // Configuração do servidor de desenvolvimento (desabilitado para CI)
   // O webServer é usado apenas para desenvolvimento local
   // Em CI, usamos a URL do Render diretamente via baseURL
 webServer: {
-  // O comando para iniciar a aplicação de exemplo
-  command: 'npm run dev --prefix sample-react-app',
-  // A URL que o Playwright vai esperar estar pronta
+  // Altere esta linha para usar pnpm
+  command: 'pnpm --filter sample-react-app dev',
   url: 'http://localhost:5173',
-  // Reutiliza o servidor se já estiver rodando (útil para desenvolvimento local)
   reuseExistingServer: !process.env.CI,
-  // Tempo máximo para o servidor iniciar
   timeout: 120000,
 },
 

@@ -20,38 +20,40 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
-      - name: 3. Instalar Dependências (Projeto Principal)
-        run: npm ci
+      # --- NOVO PASSO PARA CONFIGURAR O PNPM ---
+      - name: 3. Configurar PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9 # ou a versão que você usa
+          run_install: |
+            - recursive: true
+              args: [--frozen-lockfile, --strict-peer-dependencies]
+            - args: [--global, '@playwright/test']
 
-      # --- NOVO PASSO ADICIONADO ---
-      - name: 4. Instalar Dependências (Aplicação React)
-        run: npm ci --prefix sample-react-app
+      - name: 4. Instalar Navegadores Playwright
+        run: pnpm exec playwright install --with-deps chromium
 
-      - name: 5. Instalar Navegadores Playwright
-        run: npx playwright install --with-deps chromium
-
-      - name: 6. Configurar Python para o Agente de IA
+      - name: 5. Configurar Python para o Agente de IA
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: 7. Instalar Dependências (Python)
+      - name: 6. Instalar Dependências (Python)
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 8. Executar Testes com o Agente de Auto-Correção
+      - name: 7. Executar Testes com o Agente de Auto-Correção
         env:
           CI: true
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          # O Playwright agora iniciará o webServer automaticamente antes dos testes
-          npx playwright test
+          # O Playwright iniciará o webServer usando pnpm, conforme configurado
+          pnpm exec playwright test
 
-      - name: 9. Upload dos Artefatos de Teste
+      - name: 8. Upload dos Artefatos de Teste
         if: always()
         uses: actions/upload-artifact@v4
         with:
