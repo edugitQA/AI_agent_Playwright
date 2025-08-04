@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: 3. Configurar PNPM (sem instalar)
+      - name: 3. Configurar PNPM
         uses: pnpm/action-setup@v4
         with:
           version: 9
@@ -45,17 +45,20 @@ jobs:
       - name: 7. Instalar Dependências (Python)
         run: |
           python -m pip install --upgrade pip
-          pip install -r agent/requirements.txt # Corrigido o caminho para agent/requirements.txt
+          pip install -r agent/requirements.txt
 
-      - name: 8. Executar Testes com o Agente de Auto-Correção
+      # --- NOVO PASSO ADICIONADO ---
+      - name: 8. Criar Diretórios para Logs e Snapshots
+        run: mkdir -p logs dom_snapshots
+
+      - name: 9. Executar Testes com o Agente de Auto-Correção
         env:
           CI: true
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          # O Playwright iniciará o webServer automaticamente antes dos testes
           npx playwright test
 
-      - name: 9. Upload dos Artefatos de Teste
+      - name: 10. Upload dos Artefatos de Teste
         if: always()
         uses: actions/upload-artifact@v4
         with:
