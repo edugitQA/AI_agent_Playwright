@@ -14,6 +14,9 @@ export default defineConfig({
   // Diretório onde estão localizados os testes
   testDir: './tests',
   
+   // Isso dará tempo suficiente para o agente fazer múltiplas correções se necessário
+  timeout: 3 * 60 * 1000, 
+
   // Executar testes em paralelo
   fullyParallel: false, // Desabilitado para melhor debugging da PoC
   
@@ -58,9 +61,11 @@ export default defineConfig({
 
     // Viewport padrão
     viewport: { width: 1280, height: 720 },
-    
+  
     // Ignorar erros de HTTPS
     ignoreHTTPSErrors: true,
+    
+
   },
 
   // Configuração de projetos (diferentes navegadores/dispositivos)
