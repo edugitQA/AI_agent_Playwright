@@ -134,7 +134,7 @@ export class LoginPage {
     async clickDashboardButton() {
         try {
             await this.verifyLoginSuccess();
-            await this.page.locator(this.selectors.dashboardButton).click({ timeout: 10000 });
+            await this.page.locator(this.selectors.dashboardButton).click();
         } catch (error) {
             console.log('🔧 Seletor do botão do dashboard quebrou. Acionando agente...');
             const healedSelector = await this.runner.healBrokenSelector(
