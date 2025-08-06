@@ -98,22 +98,16 @@ export class LoginPage {
         }
     }
 
-    // Clicar no botão do dashboard (com seletor intencionalmente quebrado)
-    async clickDashboardButton() {
+    // Verificar se login foi bem-sucedido
+    async verifyLoginSuccess() {
+        // Este método agora espera explicitamente pela mensagem de sucesso.
+        const successLocator = this.page.locator(this.selectors.successMessage);
         try {
-            await this.page.locator(this.selectors.dashboardButton).click({ timeout: 5000 });
+            await successLocator.waitFor({ state: 'visible', timeout: 15000 });
+            return true;
         } catch (error) {
-            const healedSelector = await this.runner.healBrokenSelector(
-                'dashboardButton',
-                this.selectors.dashboardButton,
-                'Botão para ir ao dashboard com texto "Ir para o Dashboard" que aparece na tela de sucesso do login'
-            );
-            if (healedSelector) {
-                this.updateSelector('dashboardButton', healedSelector);
-                await this.page.locator(this.selectors.dashboardButton).click();
-            } else {
-                throw new Error('Sistema de auto-correção falhou ao encontrar seletor para botão do dashboard');
-            }
+            console.error(`❌ Mensagem de sucesso do login não encontrada: ${error}`);
+            return false;
         }
     }
 
@@ -136,24 +130,39 @@ export class LoginPage {
         }
     }
 
-    // Verificar se login foi bem-sucedido
-    async verifyLoginSuccess() {
+    // Clicar no botão do dashboard (com seletor intencionalmente quebrado)
+    async clickDashboardButton() {
         try {
-            await this.page.locator(this.selectors.successMessage).waitFor({ state: 'visible' });
-            return true;
+            // **A CORREÇÃO PRINCIPAL ESTÁ AQUI**
+            // Antes de tentar clicar, garantimos que a página está no estado correto
+            // esperando pela mensagem de sucesso. Isso dá o contexto correto para o agente.
+            await this.verifyLoginSuccess();
+            await this.page.locator(this.selectors.dashboardButton).click({ timeout: 10000 });
         } catch (error) {
-            console.error(`❌ Erro na verificação do login: ${error}`);
-            return false;
+            console.log('🔧 Seletor do botão do dashboard quebrou. Acionando agente...');
+            const healedSelector = await this.runner.healBrokenSelector(
+                'dashboardButton',
+                this.selectors.dashboardButton,
+                'Botão para ir ao dashboard com texto "Ir para o Dashboard" que aparece na tela de sucesso do login'
+            );
+            if (healedSelector) {
+                this.updateSelector('dashboardButton', healedSelector);
+                await this.page.locator(this.selectors.dashboardButton).click();
+            } else {
+                throw new Error('Sistema de auto-correção falhou ao encontrar o botão do dashboard.');
+            }
         }
     }
 
     // Verificar se dashboard está visível
     async verifyDashboardVisible() {
+        const dashboardLocator = this.page.locator(this.selectors.dashboardTitle);
         try {
-            await this.page.locator(this.selectors.dashboardTitle).waitFor({ state: 'visible' });
+            // Aumentamos o timeout aqui para dar tempo para a navegação ocorrer.
+            await dashboardLocator.waitFor({ state: 'visible', timeout: 20000 });
             return true;
         } catch (error) {
-            console.error(`❌ Erro na verificação do dashboard: ${error}`);
+            console.error(`❌ Título do dashboard não encontrado: ${error}`);
             return false;
         }
     }
