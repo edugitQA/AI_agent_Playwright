@@ -12,7 +12,7 @@ export class LoginPage {
         usernameInput: '[data-testid="username-input"]',
         passwordInput: '[data-testid="password-field-old"]', // Seletor quebrado!
         loginButton: '[data-testid="login-button"]',
-        dashboardButton: '[data-testid="go-to-dashboard"]', // Seletor quebrado!
+        dashboardButton: '[data-testid="dashboard-button"]',
         errorMessage: '[data-testid="error-message"]',
         registerButton: '[data-testid="register-button"]',
         successMessage: 'text=Login Realizado com Sucesso!',
