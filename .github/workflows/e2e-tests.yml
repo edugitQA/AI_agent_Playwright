@@ -6,6 +6,8 @@ on:
   pull_request:
     branches: [master, main]
   workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'  # Executa diariamente às 03:00 BRT (06:00 UTC)
 
 jobs:
   test:
@@ -64,7 +66,4 @@ jobs:
           name: test-artifacts-${{ github.run_id }}
           path: |
             test-results/
-            playwright-report/
-            logs/
-            dom_snapshots/
-          retention-days: 7
+            playwright-
