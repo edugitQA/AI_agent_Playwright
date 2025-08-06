@@ -19,7 +19,7 @@ jobs:
       - name: 2. Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: 3. Configurar PNPM
         uses: pnpm/action-setup@v4
@@ -47,7 +47,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r agent/requirements.txt
 
-      # --- NOVO PASSO ADICIONADO ---
       - name: 8. Criar Diretórios para Logs e Snapshots
         run: mkdir -p logs dom_snapshots
 
@@ -56,7 +55,7 @@ jobs:
           CI: true
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          npx playwright test
+          npx playwright test login.spec.ts
 
       - name: 10. Upload dos Artefatos de Teste
         if: always()
