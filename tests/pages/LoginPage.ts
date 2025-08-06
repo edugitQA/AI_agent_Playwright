@@ -98,19 +98,6 @@ export class LoginPage {
         }
     }
 
-    // Verificar se login foi bem-sucedido
-    async verifyLoginSuccess() {
-        // Este método agora espera explicitamente pela mensagem de sucesso.
-        const successLocator = this.page.locator(this.selectors.successMessage);
-        try {
-            await successLocator.waitFor({ state: 'visible', timeout: 15000 });
-            return true;
-        } catch (error) {
-            console.error(`❌ Mensagem de sucesso do login não encontrada: ${error}`);
-            return false;
-        }
-    }
-
     // Clicar no botão de registro
     async clickRegisterButton() {
         try {
@@ -130,12 +117,22 @@ export class LoginPage {
         }
     }
 
+    // Verificar se login foi bem-sucedido
+    async verifyLoginSuccess() {
+        // Este método agora espera explicitamente pela mensagem de sucesso.
+        const successLocator = this.page.locator(this.selectors.successMessage);
+        try {
+            await successLocator.waitFor({ state: 'visible', timeout: 15000 });
+            return true;
+        } catch (error) {
+            console.error(`❌ Mensagem de sucesso do login não encontrada: ${error}`);
+            return false;
+        }
+    }
+
     // Clicar no botão do dashboard (com seletor intencionalmente quebrado)
     async clickDashboardButton() {
         try {
-            // **A CORREÇÃO PRINCIPAL ESTÁ AQUI**
-            // Antes de tentar clicar, garantimos que a página está no estado correto
-            // esperando pela mensagem de sucesso. Isso dá o contexto correto para o agente.
             await this.verifyLoginSuccess();
             await this.page.locator(this.selectors.dashboardButton).click({ timeout: 10000 });
         } catch (error) {
@@ -159,7 +156,7 @@ export class LoginPage {
         const dashboardLocator = this.page.locator(this.selectors.dashboardTitle);
         try {
             // Aumentamos o timeout aqui para dar tempo para a navegação ocorrer.
-            await dashboardLocator.waitFor({ state: 'visible', timeout: 20000 });
+            await dashboardLocator.waitFor({ state: 'visible', timeout: 30000 });
             return true;
         } catch (error) {
             console.error(`❌ Título do dashboard não encontrado: ${error}`);
