@@ -9,7 +9,7 @@ export class LoginPage {
     // Mapeamento dos seletores da página de login
     // Alguns seletores estão intencionalmente quebrados para demonstrar auto-correção
     private selectors = {
-        usernameInput: '[data-testid="username-input"]',
+        usernameInput: '[data-testid="username-input-old"]', // Seletor quebrado implementado posteriormente!
         passwordInput: '[data-testid="password-field-old"]', // Seletor quebrado!
         loginButton: '[data-testid="login-button"]',
         dashboardButton: '[data-testid="dashboard-button"]',

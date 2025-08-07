@@ -14,10 +14,7 @@ import { LoginPage } from './pages/LoginPage';
  * Nota: Este arquivo demonstra seletores intencionalmente quebrados
  * para validar o sistema de auto-recuperação usando o agente de auto-correção.
  */
-
-/**
- * Helper function to click an element and wait for it to be visible.
- */
+        
 async function clickElement(page: any, locator: any) {
     await expect(locator).toBeVisible();
     await locator.click();
@@ -28,7 +25,7 @@ test.describe('Sistema de Login com Auto-Correção', () => {
 
     test.beforeEach(async ({ page }) => {
         loginPage = new LoginPage(page);
-        console.log('🚀 Iniciando teste de login com sistema de auto-correção...');
+        console.log('Iniciando teste de login com sistema de auto-correção...');
     });
 
     test('Deve fazer login com sucesso e navegar para o dashboard', async ({ page }) => {
