@@ -1,4 +1,4 @@
-# 🤖 Automação de Testes com Auto-Correção de Seletores
+# 🤖 Automação de Testes com Auto-Correção
 
 [![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/)
 [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org/)
