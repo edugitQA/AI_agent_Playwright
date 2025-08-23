@@ -6,8 +6,7 @@
  * para criar um sistema de auto-correção que detecta seletores quebrados,
  * analisa o DOM atual e aplica automaticamente novos seletores sugeridos.
  * 
- * Autor: Manus AI
- * Data: 2025-07-23
+ * Autor: Eduardo Alves
  */
 
 const { spawn } = require('child_process');
