@@ -66,4 +66,17 @@ jobs:
           name: test-artifacts-${{ github.run_id }}
           path: |
             test-results/
-            playwright-
+            playwright-logs/
+
+      - name: 11. Compilar Histórico de Seletores (opcional)
+        if: always()
+        run: node .github/scripts/compile-selector-history.js
+
+      - name: 12. Upload dos Artefatos de Histórico
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selector-history-report-${{ github.run_id }}
+          path: test-artifacts/reports/selector-history.html
+
+     

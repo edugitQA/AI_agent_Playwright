@@ -1,8 +1,7 @@
 """
 PoC: Agente LangGraph para Auto-Correção de Seletores em Testes E2E
 
-Este módulo implementa um agente autônomo usando LangGraph e OpenAI gpt-4o-mini,
-para analisar o DOM de aplicações React e sugerir novos seletores quando
+Este módulo implementa um agente autônomo, para analisar o DOM de aplicações React e sugerir novos seletores quando
 os seletores originais falham durante a execução de testes Playwright.
 
 Funcionalidades principais:
@@ -105,8 +104,8 @@ class DOMAnalyzer:
             expected_type = 'password'
         elif 'text' in element_description.lower():
             expected_type = 'text'
-        # Aqui Adicione outros tipos conforme necessário
 
+        # Aqui Adicione outros tipos conforme necessário
         for tag in self.soup.find_all(['input', 'button', 'div', 'span', 'a', 'form']):
             # Filtro: se esperado um input de senha, só aceitar input[type=password]
             if expected_type and tag.name == 'input':
@@ -122,6 +121,7 @@ class DOMAnalyzer:
                     'suggested_selectors': self._generate_selectors_for_element(tag)
                 }
                 similar_elements.append(element_info)
+
         # Ordenar por score de similaridade
         similar_elements.sort(key=lambda x: x['similarity_score'], reverse=True)
         logger.info(f"Encontrados {len(similar_elements)} elementos similares")
@@ -164,10 +164,17 @@ class DOMAnalyzer:
             placeholder_text = tag.get('placeholder').lower()
             for keyword in keywords:
                 if keyword in placeholder_text:
-                    score += 0.3
-        
-        return min(score, 1.0)  # Limitar score a 1.0
-    
+                    score += 0.4
+        #verificação de atributos 'aria-label' e 'title'
+        for attr in ['aria-label', 'title']:
+            if tag.get(attr):
+                attr_text = tag.get(attr).lower()
+                for keyword in keywords:
+                    if keyword in attr_text:
+                        score += 0.35 
+                    
+        return min(score, 1.0) 
+
     def _generate_selectors_for_element(self, tag: Tag) -> List[str]:
         """Gera diferentes tipos de seletores para um elemento"""
         selectors = []
@@ -176,6 +183,10 @@ class DOMAnalyzer:
         if tag.get('data-testid'):
             selectors.append(f'[data-testid="{tag.get("data-testid")}"]')
         
+        # Placeholder (segunda maior prioridade para inputs)
+        if tag.name == 'input' and tag.get('placeholder'):
+            selectors.append(f'placeholder="{tag.get("placeholder")}"')
+
         # ID
         if tag.get('id'):
             selectors.append(f'#{tag.get("id")}')
@@ -189,10 +200,6 @@ class DOMAnalyzer:
         text = tag.get_text(strip=True)
         if text and len(text) < 50:
             selectors.append(f'text="{text}"')
-        
-        # Placeholder
-        if tag.get('placeholder'):
-            selectors.append(f'[placeholder="{tag.get("placeholder")}"]')
         
         # Tipo de input
         if tag.name == 'input' and tag.get('type'):
@@ -305,10 +312,21 @@ class LangGraphSelectorAgent:
         return workflow.compile()
     
     def _prepare_llm_context(self, state: AgentState, similar_elements: List[Dict]) -> SystemMessage:
-        """Prepara o contexto para o LLM"""
+        """Prepara o contexto para a LLM"""
+        # Extrai um snippet do DOM para cada elemento similar
+        for element in similar_elements:
+            tag = self.dom_analyzer.soup.find(element['tag'], element['attributes'])
+            if tag:
+                # Pega o elemento pai e um resumo dos filhos
+                parent_info = f"Pai: <{tag.parent.name}> com atributos {dict(tag.parent.attrs)}" if tag.parent else "Sem pai"
+                children_summary = [f"<{child.name}>" for child in tag.find_all(limit=3)]
+                element['dom_context'] = {
+                    "parent": parent_info,
+                    "children_summary": children_summary
+                }
         
         context = f"""
-Você é um especialista em automação de testes E2E e análise de DOM. Sua tarefa é analisar o DOM de uma aplicação React e sugerir novos seletores quando um seletor original falha.
+Você é um especialista em automação de testes playwright E2E e análise de DOM. Sua tarefa é analisar o DOM de uma aplicação React e sugerir novos seletores ou placeholders identificados quando um seletor original falha.
 
 INFORMAÇÕES DO PROBLEMA:
 - Seletor original que falhou: {state.original_selector}
@@ -324,7 +342,8 @@ INSTRUÇÕES:
 3. Sugira 3-5 seletores alternativos em ordem de prioridade.
 4. Para cada seletor, forneça uma explicação do porquê é uma boa opção.
 5. Priorize seletores estáveis (data-testid > text > CSS classes > XPath).
-6. **IMPORTANTE: Evite seletores excessivamente genéricos como 'body' ou '#root', a menos que seja a única opção possível.**
+6. Considere o contexto do DOM (pais e filhos) para desambiguar elementos. Por exemplo, um `<span>` dentro de um `<button>` é parte do botão.
+7. **IMPORTANTE: Evite seletores excessivamente genéricos como 'body' ou '#root', a menos que seja a única opção possível.**
 
 FORMATO DE RESPOSTA (JSON):
 {{
