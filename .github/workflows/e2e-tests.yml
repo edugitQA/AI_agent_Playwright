@@ -90,7 +90,6 @@ jobs:
           commit_user_name: GitHub Actions Bot
           commit_user_email: actions@github.com
           commit_author: GitHub Actions Bot <actions@github.com>
-          push_options: '--force' 
 
       - name: 13. Upload dos Artefatos de Teste
         if: always()

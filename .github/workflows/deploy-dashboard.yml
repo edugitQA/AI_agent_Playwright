@@ -7,8 +7,8 @@ on:
     branches:
       - main # Ou a branch que você usa como principal
     paths:
-      - 'metrics/dashboard-metrics.json'
       - 'automation-dashboard/**'
+      - 'metrics/dashboard-metrics.json'
 
   workflow_dispatch:
 
