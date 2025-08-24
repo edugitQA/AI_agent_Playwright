@@ -6,9 +6,10 @@ on:
   push:
     branches:
       - master 
+      - 'feature/dashboard-metricas-agente' # Para testar a feature atual
     paths:
       - 'automation-dashboard/**'
-      # Removido metrics/dashboard-metrics.json até ser criado
+      - '.github/workflows/deploy-dashboard.yml' # Re-executa se o workflow for alterado
   
   workflow_dispatch:
 
@@ -18,11 +19,10 @@ permissions:
   id-token: write
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    # Só usa environment GitHub Pages se for master
+    environment: ${{ github.ref == 'refs/heads/master' && 'github-pages' || '' }}
 
     steps:
       - name: 1. Checkout do Repositório
@@ -53,14 +53,26 @@ jobs:
       - name: 5. Build do Dashboard
         run: npm --prefix automation-dashboard run build
 
+      # Steps condicionais: só executa deploy para GitHub Pages se for master
       - name: 6. Configurar GitHub Pages
+        if: github.ref == 'refs/heads/master'
         uses: actions/configure-pages@v5
 
       - name: 7. Upload do Artefato do Build
+        if: github.ref == 'refs/heads/master'
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./automation-dashboard/dist
 
       - name: 8. Deploy para GitHub Pages
+        if: github.ref == 'refs/heads/master'
         id: deployment
         uses: actions/deploy-pages@v4
+
+      # Upload como artefato para outras branches (para teste)
+      - name: 9. Upload Build para Teste (outras branches)
+        if: github.ref != 'refs/heads/master'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-build-test-${{ github.ref_name }}
+          path: ./automation-dashboard/dist

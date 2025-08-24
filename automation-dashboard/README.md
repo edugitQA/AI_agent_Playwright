@@ -1,6 +1,13 @@
-# React + Vite
+# Automation Health Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Dashboard para visualizar métricas e saúde dos testes automatizados com Playwright.
+
+## Stack
+- React + Vite  
+- Recharts para gráficos
+- Lucide React para ícones
+
+## Desenvolvimento
 
 Currently, two official plugins are available:
 
