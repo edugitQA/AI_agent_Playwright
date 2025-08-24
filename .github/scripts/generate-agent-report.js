@@ -8,20 +8,42 @@
 const fs = require('fs');
 const path = require('path');
 
-// Configurações
+// --- CONFIGURAÇÕES ATUALIZADAS ---
 const LOG_DIR = path.join(process.cwd(), 'logs');
-const SNAPSHOT_DIR = path.join(process.cwd(), 'dom_snapshots');
-const REPORT_DIR = path.join(process.cwd(), 'test-artifacts', 'reports');
-const AGENT_LOG_FILE = path.join(LOG_DIR, 'langgraph_agent.log');
-const SELECTOR_CACHE_FILE = path.join(LOG_DIR, 'selector_cache.json');
+const REPORT_DIR = path.join(process.cwd(), 'test-results');
+// NOVO: Diretório de métricas na raiz
+const METRICS_DIR = path.join(process.cwd(), 'metrics'); 
+const METRICS_FILE = 'dashboard-metrics.json';
+const METRICS_FILE_PATH = path.join(METRICS_DIR, METRICS_FILE);
 
-// Garantir que os diretórios existam
-if (!fs.existsSync(REPORT_DIR)) {
-  fs.mkdirSync(REPORT_DIR, { recursive: true });
+// Arquivos específicos para análise
+// const AGENT_LOG_FILE = path.join(LOG_DIR, 'langgraph_agent.log');
+// const SELECTOR_CACHE_FILE = path.join(LOG_DIR, 'selector_cache.json');
+// const SNAPSHOT_DIR = path.join(process.cwd(), 'dom_snapshots');
+
+function generateMetricsAndReport() {
+    console.log('🚀 Iniciando geração de métricas e relatório do agente...');
+
+    // Garante que os diretórios de destino existam
+    [REPORT_DIR, METRICS_DIR].forEach(dir => {
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+    });
+
+    // Lógica para ler logs, processar e gerar métricas
+    const stats = collectAgentStats();
+    const finalMetrics = generateDashboardMetrics(stats);
+    
+    // Gerar relatório HTML
+    generateReport(stats);
+    
+    // Salvar métricas para o dashboard
+    fs.writeFileSync(METRICS_FILE_PATH, JSON.stringify(finalMetrics, null, 2));
+    console.log(`✅ Métricas do dashboard acumuladas e salvas em: ${METRICS_FILE_PATH}`);
 }
 
-// Função principal para gerar relatório
-function generateReport() {
+function collectAgentStats() {
   console.log('Gerando relatório do agente de auto-correção...');
 
   // Estatísticas do agente

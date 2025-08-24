@@ -1,0 +1,59 @@
+# .github/workflows/deploy-dashboard.yml
+name: Deploy Automation Health Dashboard
+
+on:
+  push:
+    branches:
+      - main 
+    paths:
+      - 'automation-dashboard/**'
+      - 'metrics/dashboard-metrics.json' # Aciona se as métricas mudarem
+
+  workflow_dispatch: # Permite acionamento manual
+
+# Permissões para o deploy no GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: 1. Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'automation-dashboard/package-lock.json'
+
+      - name: 3. Instalar Dependências do Dashboard
+        run: npm --prefix automation-dashboard ci
+
+      - name: 4. Copiar Métricas para o Dashboard
+        run: |
+          mkdir -p automation-dashboard/public/
+          cp metrics/dashboard-metrics.json automation-dashboard/public/
+
+      - name: 5. Build do Dashboard
+        run: npm --prefix automation-dashboard run build
+
+      - name: 6. Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: 7. Upload do Artefato do Build
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./automation-dashboard/dist
+
+      - name: 8. Deploy para GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
