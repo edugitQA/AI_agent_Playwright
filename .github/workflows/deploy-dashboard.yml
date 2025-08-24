@@ -1,0 +1,71 @@
+# .github/workflows/deploy-dashboard.yml
+
+name: Deploy Automation Health Dashboard
+
+on:
+  push:
+    branches:
+      - main # Ou a branch que você usa como principal
+    paths:
+      - 'automation-dashboard/**'
+      - 'metrics/dashboard-metrics.json'
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: 1. Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+          cache-dependency-path: 'automation-dashboard/pnpm-lock.yaml'
+
+      # --- ALTERAÇÃO AQUI ---
+      # Substituímos a action 'pnpm/action-setup' pela instalação global
+      - name: 3. Instalar PNPM Globalmente
+        run: npm install -g pnpm
+
+      - name: 4. Instalar Dependências do Dashboard
+        run: pnpm --prefix automation-dashboard install
+
+      - name: 5. Copiar Métricas para o Dashboard
+        run: |
+          mkdir -p automation-dashboard/public/
+          # Adicionamos uma verificação para não falhar se o arquivo ainda não existir no primeiro run
+          if [ -f "metrics/dashboard-metrics.json" ]; then
+            cp metrics/dashboard-metrics.json automation-dashboard/public/
+          else
+            echo "Arquivo de métricas não encontrado. O dashboard usará dados vazios."
+            # Cria um arquivo vazio para evitar erro no build
+            echo '{}' > automation-dashboard/public/dashboard-metrics.json
+          fi
+
+      - name: 6. Build do Dashboard
+        run: pnpm --prefix automation-dashboard build
+
+      - name: 7. Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: 8. Upload do Artefato do Build
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./automation-dashboard/dist
+
+      - name: 9. Deploy para GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
