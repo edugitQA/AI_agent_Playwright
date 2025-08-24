@@ -5,7 +5,7 @@ name: Deploy Automation Health Dashboard
 on:
   push:
     branches:
-      - master # Corrigido para a branch principal real
+      - master 
     paths:
       - 'automation-dashboard/**'
       # Removido metrics/dashboard-metrics.json até ser criado
