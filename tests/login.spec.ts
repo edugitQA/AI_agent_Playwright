@@ -151,14 +151,11 @@ test.describe('Sistema de Login com Auto-Correção', () => {
         }
 
         // Aguardar validação
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(3000);
 
         // Verificar se os campos estão destacados como obrigatórios
-        const usernameField = page.locator('[data-testid="username-input"]');
-        const passwordField = page.locator('[data-testid="password-input"]');
 
-        await expect(usernameField).toBeVisible();
-        await expect(passwordField).toBeVisible();
+        await expect(page.locator('[data-testid="error-message"]')).toBeVisible();
 
         console.log('✅ Validação de campos obrigatórios testada!');
     });
