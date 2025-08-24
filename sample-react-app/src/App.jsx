@@ -278,7 +278,7 @@ function App() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-10"
-                data-testid="password-input"
+                data-testid="password-input-input-old"
               />
             </div>
           </div>
