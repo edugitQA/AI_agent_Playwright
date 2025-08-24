@@ -200,7 +200,8 @@ class SelfHealingTestRunner {
                 .then(() => {
                     // Chamar script Python com o caminho do arquivo persistente
                     const pythonScript = path.join(__dirname, 'python_bridge.py');
-                    const python = spawn('python3', [
+                    const pythonExecutable = path.join(__dirname, '../venv/bin/python');
+                    const python = spawn(pythonExecutable, [
                         pythonScript,
                         originalSelector,
                         elementDescription,

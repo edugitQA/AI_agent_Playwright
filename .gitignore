@@ -3,6 +3,7 @@
 node_modules/
 .env
 .venv
+venv
 __pycache__/
 *.pyc
 .pytest_cache
@@ -20,4 +21,4 @@ dom_snapshots/*.html
 
 # IDE
 .vscode/
-.DS_Store
+.DS_Storevenv/
