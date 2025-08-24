@@ -75,17 +75,23 @@ jobs:
         if: always()
         run: node .github/scripts/generate-agent-report.js
 
-      - name: 11. Commit e Push das Métricas Atualizadas
+      - name: 11. Verificar por Alterações no Arquivo de Métricas
+        id: git-check
+        run: |
+          echo "Verificando alterações em 'metrics/dashboard-metrics.json'..."
+          git diff --quiet --exit-code metrics/dashboard-metrics.json || echo "has_changes=true" >> $GITHUB_OUTPUT
+
+      - name: 12. Commit e Push das Métricas (se houver alterações)
+        if: steps.git-check.outputs.has_changes == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(metrics): Atualiza métricas do dashboard de automação [skip ci]"
-          # Caminho atualizado para o novo diretório de métricas
-          file_pattern: metrics/dashboard-metrics.json 
+          file_pattern: metrics/dashboard-metrics.json
           commit_user_name: GitHub Actions Bot
           commit_user_email: actions@github.com
           commit_author: GitHub Actions Bot <actions@github.com>
 
-      - name: 12. Upload dos Artefatos de Teste
+      - name: 13. Upload dos Artefatos de Teste
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -97,7 +103,7 @@ jobs:
             dom_snapshots/
             metrics/dashboard-metrics.json # Salva o JSON gerado
 
-      - name: 13. Compilar Histórico de Seletores (opcional)
+      - name: 14. Compilar Histórico de Seletores (opcional)
         if: always()
         run: |
           if [ -f ".github/scripts/compile-selector-history.js" ]; then
@@ -106,7 +112,7 @@ jobs:
             echo "ℹ️ Script de histórico não encontrado, pulando..."
           fi
 
-      - name: 14. Upload dos Artefatos de Histórico
+      - name: 15. Upload dos Artefatos de Histórico
         if: always()
         uses: actions/upload-artifact@v4
         with:
