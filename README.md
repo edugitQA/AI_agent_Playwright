@@ -84,7 +84,7 @@ A solução foi projetada para resolver um dos maiores desafios em testes E2E: a
 - 🎯 **Sugere novos seletores** com base em atributos confiáveis
 - ⚡ **Aplica correções dinamicamente** e reexecuta os testes sem intervenção manual
 
-## ✨ **Funcionalidades Principais**
+## **Funcionalidades Principais**
 
 ### 🤖 **Inteligência Artificial Integrada**
 - **🧠 Análise Semântica do DOM:** Utiliza GPT-4 para entender a estrutura e intenção dos elementos
