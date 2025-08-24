@@ -18,6 +18,7 @@ export class LoginPage {
         successMessage: 'text=Login Realizado com Sucesso!',
         dashboardTitle: 'text=Dashboard do Usuário',
         backButtonLogin: '[data-testid="back-to-login-button"]'
+        
     };
 
     constructor(private page: Page) {

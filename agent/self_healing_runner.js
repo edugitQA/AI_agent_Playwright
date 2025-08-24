@@ -29,7 +29,9 @@ class SelfHealingTestRunner {
             this.selectorCache = new Map(Object.entries(cache));
             console.log(`✅ Cache carregado com ${this.selectorCache.size} entradas`);
         } catch (error) {
-            console.log('ℹ️ Cache não encontrado, iniciando com cache vazio');
+            const envInfo = process.env.CI ? ' (ambiente CI - normal)' : ' (local)';
+            console.log(`ℹ️ Cache não encontrado${envInfo}, iniciando com cache vazio`);
+            this.selectorCache = new Map();
         }
     }
 
@@ -200,7 +202,14 @@ class SelfHealingTestRunner {
                 .then(() => {
                     // Chamar script Python com o caminho do arquivo persistente
                     const pythonScript = path.join(__dirname, 'python_bridge.py');
-                    const pythonExecutable = path.join(__dirname, '../venv/bin/python');
+                    
+                    // Detectar ambiente (CI/Pipeline vs Local)
+                    const pythonExecutable = process.env.CI || process.env.GITHUB_ACTIONS
+                        ? 'python'  // Pipeline usa Python do sistema
+                        : path.join(__dirname, '../venv/bin/python'); // Local usa venv
+                    
+                    console.log(`🐍 Usando Python: ${pythonExecutable} (CI: ${!!process.env.CI})`);
+                    
                     const python = spawn(pythonExecutable, [
                         pythonScript,
                         originalSelector,

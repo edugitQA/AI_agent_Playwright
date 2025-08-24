@@ -43,36 +43,54 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
+          cache-dependency-path: 'requirements.txt'
 
       - name: 7. Instalar Dependências (Python)
         run: |
           python -m pip install --upgrade pip
-          pip install -r agent/requirements.txt
+          pip install -r requirements.txt
 
       - name: 8. Criar Diretórios para Logs e Snapshots
         run: mkdir -p logs dom_snapshots
 
-      - name: 9. Executar Testes com o Agente de Auto-Correção
+      - name: 9. Validar Configuração da API OpenAI
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "❌ OPENAI_API_KEY não configurada nos secrets!"
+            exit 1
+          else
+            echo "✅ OPENAI_API_KEY configurada"
+          fi
+
+      - name: 10. Executar Testes com o Agente de Auto-Correção
         env:
           CI: true
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           npx playwright test login.spec.ts
 
-      - name: 10. Upload dos Artefatos de Teste
+      - name: 11. Upload dos Artefatos de Teste
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-artifacts-${{ github.run_id }}
           path: |
             test-results/
-            playwright-logs/
+            logs/
+            dom_snapshots/
 
-      - name: 11. Compilar Histórico de Seletores (opcional)
+      - name: 12. Compilar Histórico de Seletores (opcional)
         if: always()
-        run: node .github/scripts/compile-selector-history.js
+        run: |
+          if [ -f ".github/scripts/compile-selector-history.js" ]; then
+            node .github/scripts/compile-selector-history.js
+          else
+            echo "ℹ️ Script de histórico não encontrado, pulando..."
+          fi
 
-      - name: 12. Upload dos Artefatos de Histórico
+      - name: 13. Upload dos Artefatos de Histórico
         if: always()
         uses: actions/upload-artifact@v4
         with:
