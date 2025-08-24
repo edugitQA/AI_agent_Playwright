@@ -6,9 +6,9 @@ on:
   push:
     branches:
       - main # Ou a branch que você usa como principal
-    paths:
-      - 'automation-dashboard/**'
+     paths:
       - 'metrics/dashboard-metrics.json'
+      - 'automation-dashboard/**'
 
   workflow_dispatch:
 
