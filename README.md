@@ -564,7 +564,7 @@ Agradecemos a todas as tecnologias e comunidades que tornaram este projeto poss�
 - **⚡ Vite Team** - Build tool ultra-rápido
 - **🎨 shadcn/ui** - Biblioteca de componentes elegante
 
-**Desenvolvido com ❤️ por [Eduardo ALVES](https://github.com/edugitQA)**
+**Desenvolvido por [Eduardo ALVES](https://github.com/edugitQA)**
 
 ---
 
