@@ -260,7 +260,7 @@ function App() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="pl-10"
-                data-testid="username-input-old"
+                data-testid="username-input"
               />
             </div>
           </div>
@@ -278,7 +278,7 @@ function App() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-10"
-                data-testid="password-input"
+                data-testid="password-input-old"
               />
             </div>
           </div>
