@@ -1,50 +1,79 @@
 // automation-dashboard/src/AutomationHealthDashboard.jsx
 
 import { useState, useEffect } from 'react';
-
-// Simula a importação de componentes UI (ajuste se necessário para seu projeto)
-const Card = ({ children }) => <div style={{ border: '1px solid #ddd', borderRadius: '8px', marginBottom: '1rem' }}>{children}</div>;
-const CardHeader = ({ children }) => <div style={{ padding: '1rem', borderBottom: '1px solid #ddd' }}>{children}</div>;
-const CardTitle = ({ children }) => <h3 style={{ margin: 0, fontSize: '1.25rem' }}>{children}</h3>;
-const CardDescription = ({ children }) => <p style={{ margin: '0.25rem 0 0', color: '#666', fontSize: '0.875rem' }}>{children}</p>;
-const CardContent = ({ children }) => <div style={{ padding: '1rem' }}>{children}</div>;
-const Table = ({ children }) => <table style={{ width: '100%', borderCollapse: 'collapse' }}>{children}</table>;
-const TableHeader = ({ children }) => <thead style={{ backgroundColor: '#f9fafb' }}>{children}</thead>;
-const TableRow = ({ children }) => <tr>{children}</tr>;
-const TableHead = ({ children, ...props }) => <th style={{ padding: '0.75rem', textAlign: 'left', borderBottom: '1px solid #ddd' }} {...props}>{children}</th>;
-const TableBody = ({ children }) => <tbody>{children}</tbody>;
-const TableCell = ({ children, ...props }) => <td style={{ padding: '0.75rem', borderBottom: '1px solid #ddd' }} {...props}>{children}</td>;
-const Badge = ({ children }) => <span style={{ padding: '0.25rem 0.5rem', borderRadius: '9999px', backgroundColor: '#eee', color: '#333', fontSize: '0.75rem' }}>{children}</span>;
-const Progress = ({ value }) => <div style={{ width: '100%', backgroundColor: '#eee', borderRadius: '9999px', height: '8px' }}><div style={{ width: `${value}%`, backgroundColor: '#3b82f6', height: '100%', borderRadius: '9999px' }}></div></div>;
-
-
+// ... (mantenha os imports de UI e recharts como estavam)
 // Supondo que você tem o recharts instalado
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+
+
+const Card = ({ children }) => <div className="bg-white shadow-sm rounded-lg">{children}</div>;
+const CardHeader = ({ children }) => <div className="p-4 border-b">{children}</div>;
+const CardTitle = ({ children }) => <h3 className="text-lg font-semibold">{children}</h3>;
+const CardDescription = ({ children }) => <p className="text-sm text-gray-500">{children}</p>;
+const CardContent = ({ children }) => <div className="p-4">{children}</div>;
+const Table = ({ children }) => <table className="w-full text-sm">{children}</table>;
+const TableHeader = ({ children }) => <thead className="bg-gray-50">{children}</thead>;
+const TableRow = ({ children }) => <tr className="border-b">{children}</tr>;
+const TableHead = ({ children, ...props }) => <th className="px-4 py-2 text-left font-medium" {...props}>{children}</th>;
+const TableBody = ({ children }) => <tbody>{children}</tbody>;
+const TableCell = ({ children, ...props }) => <td className="px-4 py-2" {...props}>{children}</td>;
+const Badge = ({ children }) => <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">{children}</span>;
+const Progress = ({ value }) => <div className="w-full bg-gray-200 rounded-full h-2.5"><div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${value}%` }}></div></div>;
+
 
 export function AutomationHealthDashboard() {
     const [metrics, setMetrics] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // O fetch aponta para o arquivo que está na pasta 'public' do dashboard
-        fetch('./dashboard-metrics.json')
+        fetch('./agent_activity.log') // <-- MUDOU O ARQUIVO
             .then(response => {
                 if (!response.ok) {
+                    // Se o arquivo não existir (404), trata como sem dados
+                    if (response.status === 404) return "";
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.json();
+                return response.text();
             })
-            .then(data => {
-                setMetrics(data);
+            .then(logText => {
+                // Processa o log de atividades aqui no cliente
+                const allAttempts = logText.trim().split('\n').filter(line => line).map(line => JSON.parse(line));
+                
+                const summary = {
+                    totalInvocations: allAttempts.length,
+                    successfulHeals: allAttempts.filter(a => a.success).length,
+                };
+                summary.failedHeals = summary.totalInvocations - summary.successfulHeals;
+                summary.successRate = summary.totalInvocations > 0 ? parseFloat(((summary.successfulHeals / summary.totalInvocations) * 100).toFixed(2)) : 0;
+
+                const selectorCounts = allAttempts.reduce((acc, attempt) => {
+                    const key = attempt.originalSelector;
+                    if (!acc[key]) {
+                        acc[key] = { key, original: key, success: 0, failure: 0, total: 0, history: [] };
+                    }
+                    acc[key].total++;
+                    if (attempt.success) {
+                        acc[key].success++;
+                        acc[key].history.push({ correctedTo: attempt.successfulSelector, date: attempt.timestamp });
+                    } else {
+                        acc[key].failure++;
+                    }
+                    return acc;
+                }, {});
+                
+                const unstableSelectors = Object.values(selectorCounts).sort((a, b) => b.total - a.total);
+
+                setMetrics({ summary, unstableSelectors });
                 setLoading(false);
             })
             .catch(error => {
-                console.error("Erro ao carregar métricas do dashboard:", error);
-                setMetrics({ summary: { totalInvocations: 0 } }); // Define um estado de erro/vazio
+                console.error("Erro ao carregar ou processar o log de atividades:", error);
                 setLoading(false);
             });
     }, []);
-
+    
+    // O resto do código de renderização (JSX) permanece o mesmo da versão anterior...
+    // ... (cole aqui o return (...) da versão anterior do dashboard)
     if (loading) {
         return <div className="p-8 text-center">Carregando métricas...</div>;
     }
@@ -68,44 +97,46 @@ export function AutomationHealthDashboard() {
     return (
         <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
             <h1 className="text-3xl font-bold mb-2">Dashboard de Saúde da Automação</h1>
-            <p className="text-gray-500 mb-6">Última atualização: {new Date(metrics.lastUpdated).toLocaleString()}</p>
-
-            {/* Métricas Principais */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+            {/* Opcional: Adicionar um timestamp de quando o dashboard foi carregado */}
+            <p className="text-gray-500 mb-6">Dados processados em: {new Date().toLocaleString()}</p>
+            
+            {/* O resto do JSX é o mesmo */}
+             {/* Métricas Principais */}
+             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-sm font-medium">Total de Atuações</CardTitle>
+                        <CardTitle>Total de Atuações</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{metrics.summary.totalInvocations}</div>
-                        <p className="text-xs text-muted-foreground">vezes que o agente foi acionado</p>
+                        <p className="text-xs text-gray-500">vezes que o agente foi acionado</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-sm font-medium">Correções com Sucesso</CardTitle>
+                        <CardTitle>Correções com Sucesso</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-green-600">{metrics.summary.successfulHeals}</div>
-                        <p className="text-xs text-muted-foreground">seletores corrigidos automaticamente</p>
+                        <p className="text-xs text-gray-500">seletores corrigidos automaticamente</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-sm font-medium">Falhas na Correção</CardTitle>
+                        <CardTitle>Falhas na Correção</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-red-600">{metrics.summary.failedHeals}</div>
-                        <p className="text-xs text-muted-foreground">requerem análise manual</p>
+                        <p className="text-xs text-gray-500">requerem análise manual</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-sm font-medium">Taxa de Sucesso</CardTitle>
+                        <CardTitle>Taxa de Sucesso</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{metrics.summary.successRate}%</div>
-                        <Progress value={metrics.summary.successRate} className="mt-2" />
+                        <Progress value={metrics.summary.successRate} />
                     </CardContent>
                 </Card>
             </div>
