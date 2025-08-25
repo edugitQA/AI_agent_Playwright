@@ -71,22 +71,20 @@ jobs:
         run: |
           npx playwright test login.spec.ts
 
-      - name: 11. Coletar Novas Métricas de Atividade
+      - name: 10. Coletar Novas Métricas de Atividade
         if: always()
         run: node .github/scripts/generate-agent-report.js
 
-      - name: 12. Fazer Commit e Push do Log de Atividades
+      
+      - name: 11. Fazer Commit e Push do Log de Atividades
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore(metrics): Atualiza métricas do dashboard de automação [skip ci]"
-          file_pattern: metrics/dashboard-metrics.json
-          commit_user_name: GitHub Actions Bot
-          commit_user_email: actions@github.com
-          commit_author: GitHub Actions Bot <actions@github.com>
-          push_options: '--force' 
+          token: ${{ secrets.PAT }}
+          commit_message: "chore(metrics): Adiciona novas atividades do agente [skip ci]"
+          # Altera o arquivo que estamos monitorando
+          file_pattern: metrics/agent_activity.log
 
-
-      - name: 13. Upload dos Artefatos de Teste
+      - name: 12. Upload dos Artefatos de Teste
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -96,8 +94,6 @@ jobs:
             playwright-report/
             logs/
             metrics/agent_activity.log
-
-   
 
 
      
