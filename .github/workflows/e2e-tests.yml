@@ -74,9 +74,11 @@ jobs:
       - name: 10. Coletar Novas Métricas de Atividade
         if: always()
         run: node .github/scripts/generate-agent-report.js
+        
+      - name: 11. Adicionar o arquivo de log ao Git (se for novo)
+        run: git add metrics/agent_activity.log
 
-      
-      - name: 11. Fazer Commit e Push do Log de Atividades
+      - name: 12. Fazer Commit e Push do Log de Atividades
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           token: ${{ secrets.PAT }}

@@ -9,7 +9,7 @@ on:
       - 'feature/dashboard-metricas-agente' # Para testar a feature atual
     paths:
       - 'automation-dashboard/**'
-      - '.github/workflows/deploy-dashboard.yml' # Re-executa se o workflow for alterado
+      - 'metrics/agent_activity.log'  # Re-executa se o workflow for alterado
   
   workflow_dispatch:
 
@@ -38,16 +38,15 @@ jobs:
       - name: 3. Instalar Dependências do Dashboard
         run: npm --prefix automation-dashboard ci
 
-      - name: 4. Copiar Métricas para o Dashboard (se existir)
+      - name: 4. Copiar Métricas para o Dashboard
         run: |
           mkdir -p automation-dashboard/public/
-          # Verifica se o arquivo de métricas existe
-          if [ -f "metrics/dashboard-metrics.json" ]; then
-            echo "✅ Arquivo de métricas encontrado, copiando..."
-            cp metrics/dashboard-metrics.json automation-dashboard/public/
+          if [ -f "metrics/agent_activity.log" ]; then
+            cp metrics/agent_activity.log automation-dashboard/public/
           else
-            echo "ℹ️  Arquivo de métricas não encontrado. Criando dados vazios para o primeiro deploy."
-            echo '{"lastUpdate":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","totalTests":0,"successRate":0,"corrections":[],"summary":"Aguardando primeira execução dos testes"}' > automation-dashboard/public/dashboard-metrics.json
+            echo "Arquivo de log de atividades não encontrado. O dashboard usará dados vazios."
+            # Cria um arquivo vazio para evitar erro no fetch do lado do cliente
+            touch automation-dashboard/public/agent_activity.log
           fi
 
       - name: 5. Build do Dashboard
