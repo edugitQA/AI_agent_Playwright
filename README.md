@@ -442,81 +442,6 @@ A aplicação inclui diversos componentes e cenários ideais para demonstrar a a
 - **📋 Listas Dinâmicas:** Conteúdo que muda frequentemente
 - **🎛️ Componentes UI:** Cards, modais, dropdowns, etc.
 
-## 🔧 **Resolução de Problemas Comuns**
-
-### 🐛 **Problemas com Playwright**
-
-**❌ Erro: `Cannot find module '...'`**
-```bash
-# Solução: Certifique-se de estar no diretório correto
-pwd  # Deve mostrar: /path/to/playwright-agent
-npm install
-npx playwright install
-```
-
-**❌ Erro: `Target page, context or browser has been closed`**
-```bash
-# Solução: Verifique se a aplicação React está rodando
-curl -I http://localhost:5173
-# Se não estiver, execute:
-cd sample-react-app && npm run dev
-```
-
-### 🐍 **Problemas com Python/IA**
-
-**❌ Erro: `FileNotFoundError: [Errno 2] No such file or directory`**
-```bash
-# Solução: Verifique ambiente virtual e diretórios
-source venv/bin/activate
-mkdir -p logs dom_snapshots
-ls -la logs/ dom_snapshots/
-```
-
-**❌ Erro: `OpenAI API Error (400 Bad Request)`**
-```bash
-# Solução: Verifique sua chave da API
-echo $OPENAI_API_KEY  # Deve mostrar sua chave
-# Se vazia, adicione ao .env:
-echo "OPENAI_API_KEY=sk-your-key-here" >> .env
-source .env
-```
-
-### ⚛️ **Problemas com React/Vite**
-
-**❌ Erro: `sh: 1: vite: not found`**
-```bash
-# Solução: Instale Vite com compatibilidade legacy
-cd sample-react-app
-npm install vite --save-dev --legacy-peer-deps
-npm run dev
-```
-
-**❌ Erro: `ERESOLVE unable to resolve dependency tree`**
-```bash
-# Solução: Force a instalação ignorando conflitos de peer dependencies
-cd sample-react-app
-rm -rf node_modules package-lock.json
-npm install --legacy-peer-deps
-```
-
-### 🔧 **Problemas de Performance**
-
-**❌ Testes muito lentos**
-```bash
-# Solução: Execute com menos workers
-npx playwright test --workers=1
-
-# Ou execute apenas testes específicos
-npx playwright test tests/login.spec.ts
-```
-
-**❌ Memória insuficiente**
-```bash
-# Solução: Limite uso de memória
-export NODE_OPTIONS="--max-old-space-size=4096"
-npx playwright test
-```
-
 ## 📚 **Documentação Adicional**
 
 ### 📖 **Guias Disponíveis**
@@ -639,7 +564,7 @@ Agradecemos a todas as tecnologias e comunidades que tornaram este projeto poss�
 - **⚡ Vite Team** - Build tool ultra-rápido
 - **🎨 shadcn/ui** - Biblioteca de componentes elegante
 
-**Desenvolvido com ❤️ por [Eduardo Silva](https://github.com/edugitQA)**
+**Desenvolvido com ❤️ por [Eduardo ALVES](https://github.com/edugitQA)**
 
 ---
 
