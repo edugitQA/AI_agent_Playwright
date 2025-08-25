@@ -24,20 +24,56 @@ const Progress = ({ value }) => <div className="w-full bg-gray-200 rounded-full 
 export function AutomationHealthDashboard() {
     const [metrics, setMetrics] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch('./agent_activity.log') // <-- MUDOU O ARQUIVO
+        console.log('Iniciando carregamento das métricas...');
+        
+        fetch('./metrics/agent_activity.log')
             .then(response => {
+                console.log('Response status:', response.status);
                 if (!response.ok) {
                     // Se o arquivo não existir (404), trata como sem dados
-                    if (response.status === 404) return "";
+                    if (response.status === 404) {
+                        console.log('Arquivo de métricas não encontrado (404)');
+                        return "";
+                    }
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.text();
             })
             .then(logText => {
+                console.log('Log text recebido:', logText.length > 0 ? `${logText.length} caracteres` : 'vazio');
+                
+                if (!logText.trim()) {
+                    console.log('Log vazio, definindo métricas padrão');
+                    setMetrics({ 
+                        summary: { 
+                            totalInvocations: 0, 
+                            successfulHeals: 0, 
+                            failedHeals: 0, 
+                            successRate: 0 
+                        }, 
+                        unstableSelectors: [] 
+                    });
+                    setLoading(false);
+                    return;
+                }
+                
                 // Processa o log de atividades aqui no cliente
-                const allAttempts = logText.trim().split('\n').filter(line => line).map(line => JSON.parse(line));
+                const lines = logText.trim().split('\n').filter(line => line.trim());
+                console.log('Linhas encontradas:', lines.length);
+                
+                const allAttempts = lines.map(line => {
+                    try {
+                        return JSON.parse(line);
+                    } catch (e) {
+                        console.error('Erro ao fazer parse da linha:', line, e);
+                        return null;
+                    }
+                }).filter(Boolean);
+                
+                console.log('Tentativas processadas:', allAttempts.length);
                 
                 const summary = {
                     totalInvocations: allAttempts.length,
@@ -63,19 +99,29 @@ export function AutomationHealthDashboard() {
                 
                 const unstableSelectors = Object.values(selectorCounts).sort((a, b) => b.total - a.total);
 
+                console.log('Métricas processadas:', summary);
                 setMetrics({ summary, unstableSelectors });
                 setLoading(false);
             })
             .catch(error => {
                 console.error("Erro ao carregar ou processar o log de atividades:", error);
+                setError(error.message);
                 setLoading(false);
             });
     }, []);
     
-    // O resto do código de renderização (JSX) permanece o mesmo da versão anterior...
-    // ... (cole aqui o return (...) da versão anterior do dashboard)
     if (loading) {
         return <div className="p-8 text-center">Carregando métricas...</div>;
+    }
+
+    if (error) {
+        return (
+            <div className="p-8 text-center text-red-600">
+                <h1 className="text-3xl font-bold mb-4">Erro no Dashboard</h1>
+                <p>Erro ao carregar métricas: {error}</p>
+                <p className="text-sm mt-2 text-gray-600">Verifique o console para mais detalhes.</p>
+            </div>
+        );
     }
 
     if (!metrics || !metrics.summary || metrics.summary.totalInvocations === 0) {

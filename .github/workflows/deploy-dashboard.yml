@@ -4,9 +4,9 @@ name: Deploy Automation Health Dashboard
 
 on:
   push:
-    branches:
-      - master 
-      - 'feature/dashboard-metricas-agente' # Para testar a feature atual
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
     paths:
       - 'automation-dashboard/**'
       - 'metrics/agent_activity.log'  # Re-executa se o workflow for alterado

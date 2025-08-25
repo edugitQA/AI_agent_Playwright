@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run copy-metrics && vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "copy-metrics": "mkdir -p public/metrics && cp -f ../metrics/agent_activity.log public/metrics/ 2>/dev/null || touch public/metrics/agent_activity.log"
   },
   "dependencies": {
     "lucide-react": "^0.541.0",
