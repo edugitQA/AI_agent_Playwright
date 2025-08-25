@@ -9,6 +9,10 @@ on:
   schedule:
     - cron: '0 6 * * *'  # Executa diariamente às 03:00 BRT (06:00 UTC)
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -64,37 +68,29 @@ jobs:
             echo "✅ OPENAI_API_KEY configurada"
           fi
 
-      - name: 9. Executar Testes com o Agente de Auto-Correção
+      - name: 10. Executar Testes com o Agente de Auto-Correção
         env:
           CI: true
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           npx playwright test login.spec.ts
 
-      - name: 10. Gerar Métricas e Relatório de Saúde
+      - name: 10. Coletar Novas Métricas de Atividade
         if: always()
         run: node .github/scripts/generate-agent-report.js
+        
+      - name: 11. Adicionar o arquivo de log ao Git (se for novo)
+        run: git add metrics/agent_activity.log
 
-      - name: 11. Verificar por Alterações no Arquivo de Métricas
-        id: git-check
-        run: |
-          echo "Verificando alterações em 'metrics/dashboard-metrics.json'..."
-          git diff --quiet --exit-code metrics/dashboard-metrics.json || echo "has_changes=true" >> $GITHUB_OUTPUT
-
-      - name: 12. Commit e Push das Métricas (se houver alterações)
-        if: steps.git-check.outputs.has_changes == 'true'
+      - name: 12. Fazer Commit e Push do Log de Atividades
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-
           token: ${{ secrets.PAT }}
-          push_options: '--force'
-          commit_message: "chore(metrics): Atualiza métricas do dashboard de automação [skip ci]"
-          file_pattern: metrics/dashboard-metrics.json
-          commit_user_name: GitHub Actions Bot
-          commit_user_email: actions@github.com
-          commit_author: GitHub Actions Bot <actions@github.com>
+          commit_message: "chore(metrics): Adiciona novas atividades do agente [skip ci]"
+          # Altera o arquivo que estamos monitorando
+          file_pattern: metrics/agent_activity.log
 
-      - name: 13. Upload dos Artefatos de Teste
+      - name: 12. Upload dos Artefatos de Teste
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -103,23 +99,7 @@ jobs:
             test-results/
             playwright-report/
             logs/
-            dom_snapshots/
-            metrics/dashboard-metrics.json # Salva o JSON gerado
+            metrics/agent_activity.log
 
-      - name: 14. Compilar Histórico de Seletores (opcional)
-        if: always()
-        run: |
-          if [ -f ".github/scripts/compile-selector-history.js" ]; then
-            node .github/scripts/compile-selector-history.js
-          else
-            echo "ℹ️ Script de histórico não encontrado, pulando..."
-          fi
-
-      - name: 15. Upload dos Artefatos de Histórico
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: selector-history-report-${{ github.run_id }}
-          path: test-artifacts/reports/selector-history.html
 
      
