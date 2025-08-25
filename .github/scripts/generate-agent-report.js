@@ -1,10 +1,3 @@
-/**
- * Script para gerar relatório avançado do agente de auto-correção
- * 
- * Este script analisa os logs do agente e gera um relatório detalhado 
- * sobre as tentativas de auto-correção, seletores ajustados e performance.
- */
-
 // .github/scripts/generate-agent-report.js
 
 const fs = require('fs');
@@ -12,78 +5,41 @@ const path = require('path');
 
 // --- CONFIGURAÇÕES ---
 const LOG_DIR = path.join(process.cwd(), 'logs');
-const REPORT_DIR = path.join(process.cwd(), 'test-results');
 const METRICS_DIR = path.join(process.cwd(), 'metrics');
-const METRICS_FILE = 'dashboard-metrics.json';
-const METRICS_FILE_PATH = path.join(METRICS_DIR, METRICS_FILE);
-
-// --- FUNÇÃO PRINCIPAL ---
-function main() {
-    console.log('🚀 Iniciando geração de métricas e relatório do agente...');
-
-    // Garante que os diretórios de destino existam
-    [REPORT_DIR, METRICS_DIR].forEach(dir => {
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    });
-
-    // 1. Carrega o histórico de métricas, se existir
-    let historicMetrics = { allAttempts: [] };
-    if (fs.existsSync(METRICS_FILE_PATH)) {
-        console.log('📊 Histórico de métricas encontrado. Carregando...');
-        try {
-            historicMetrics = JSON.parse(fs.readFileSync(METRICS_FILE_PATH, 'utf8'));
-        } catch (e) {
-            console.error('⚠️ Erro ao ler o arquivo de métricas. Começando do zero.', e);
-            historicMetrics = { allAttempts: [] };
-        }
-    }
-
-    // 2. Lê as novas tentativas de correção da execução atual
-    const newAttempts = getAllHealingAttempts();
-    if (newAttempts.length === 0) {
-        console.log('🟡 Nenhuma nova tentativa de correção encontrada. Apenas atualizando o timestamp.');
-        if(historicMetrics.summary) {
-            historicMetrics.lastUpdated = new Date().toISOString();
-            fs.writeFileSync(METRICS_FILE_PATH, JSON.stringify(historicMetrics, null, 2));
-        }
-        return;
-    }
-
-    // 3. Combina os dados históricos com os novos
-    const combinedAttempts = [...(historicMetrics.allAttempts || []), ...newAttempts];
-
-    // 4. Processa os dados combinados para gerar as novas métricas
-    const finalMetrics = processHealingAttempts(combinedAttempts);
-
-    // 5. Salva o JSON de métricas acumulado para o dashboard
-    fs.writeFileSync(METRICS_FILE_PATH, JSON.stringify(finalMetrics, null, 2));
-    console.log(`✅ Métricas do dashboard acumuladas e salvas em: ${METRICS_FILE_PATH}`);
-    
-    // Opcional: Gerar relatório HTML
-    const reportHtml = generateReportHtml(finalMetrics);
-    const reportHtmlPath = path.join(REPORT_DIR, 'agent-health-report.html');
-    fs.writeFileSync(reportHtmlPath, reportHtml);
-    console.log(`✅ Relatório HTML de saúde da automação gerado em: ${reportHtmlPath}`);
-}
+const METRICS_FILE_PATH = path.join(METRICS_DIR, 'dashboard-metrics.json');
 
 // --- FUNÇÕES AUXILIARES ---
 
 function getAllHealingAttempts() {
-    if (!fs.existsSync(LOG_DIR)) return [];
+    if (!fs.existsSync(LOG_DIR)) {
+        console.log(`🟡 Diretório de logs não encontrado em ${LOG_DIR}.`);
+        return [];
+    }
     const logFiles = fs.readdirSync(LOG_DIR).filter(f => f.startsWith('healing_attempt_') && f.endsWith('.json'));
+    console.log(`🔎 Encontrados ${logFiles.length} novos arquivos de log de correção.`);
+    
     return logFiles.map(file => {
         try {
-            return JSON.parse(fs.readFileSync(path.join(LOG_DIR, file), 'utf8'));
-        } catch (e) { return null; }
+            const content = fs.readFileSync(path.join(LOG_DIR, file), 'utf8');
+            return JSON.parse(content);
+        } catch (e) {
+            console.error(`❌ Erro ao ler ou parsear o arquivo de log ${file}:`, e);
+            return null;
+        }
     }).filter(Boolean);
 }
 
-function processHealingAttempts(attempts) {
-    const totalInvocations = attempts.length;
-    const successfulHeals = attempts.filter(a => a.success).length;
+function processHealingAttempts(allAttempts) {
+    if (!Array.isArray(allAttempts)) {
+        allAttempts = [];
+    }
+
+    const totalInvocations = allAttempts.length;
+    const successfulHeals = allAttempts.filter(a => a.success).length;
     const failedHeals = totalInvocations - successfulHeals;
     const successRate = totalInvocations > 0 ? (successfulHeals / totalInvocations) * 100 : 0;
-    const selectorCounts = attempts.reduce((acc, attempt) => {
+
+    const selectorCounts = allAttempts.reduce((acc, attempt) => {
         const key = attempt.originalSelector;
         if (!acc[key]) {
             acc[key] = { key, original: key, success: 0, failure: 0, total: 0, history: [] };
@@ -97,7 +53,9 @@ function processHealingAttempts(attempts) {
         }
         return acc;
     }, {});
+    
     const unstableSelectors = Object.values(selectorCounts).sort((a, b) => b.total - a.total);
+
     return {
         lastUpdated: new Date().toISOString(),
         summary: {
@@ -107,22 +65,58 @@ function processHealingAttempts(attempts) {
             successRate: parseFloat(successRate.toFixed(2)),
         },
         unstableSelectors,
-        allAttempts: attempts,
+        allAttempts,
     };
 }
 
-function generateReportHtml(metrics) {
-    return `
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head><title>Relatório de Saúde da Automação</title></head>
-    <body><h1>Relatório de Saúde da Automação</h1><p>Invocações: ${metrics.summary.totalInvocations}, Sucessos: ${metrics.summary.successfulHeals}, Falhas: ${metrics.summary.failedHeals}</p></body>
-    </html>`;
+// --- FUNÇÃO PRINCIPAL ---
+function main() {
+    console.log('🚀 Iniciando geração de métricas do agente...');
+
+    // Garante que o diretório de métricas exista
+    if (!fs.existsSync(METRICS_DIR)) {
+        fs.mkdirSync(METRICS_DIR, { recursive: true });
+    }
+
+    // 1. Carrega o histórico de métricas. Se não existir ou estiver malformado, começa com um array vazio.
+    let historicAttempts = [];
+    if (fs.existsSync(METRICS_FILE_PATH)) {
+        try {
+            const fileContent = fs.readFileSync(METRICS_FILE_PATH, 'utf8');
+            // Lida com o caso de o arquivo estar vazio ou ser inválido
+            const data = fileContent ? JSON.parse(fileContent) : {}; 
+            if (Array.isArray(data.allAttempts)) {
+                historicAttempts = data.allAttempts;
+                console.log(`📊 Histórico carregado com ${historicAttempts.length} correções anteriores.`);
+            }
+        } catch (e) {
+            console.warn('⚠️ Não foi possível ler o arquivo de métricas existente. Um novo será criado.', e.message);
+        }
+    }
+
+    // 2. Lê as novas tentativas de correção da execução atual
+    const newAttempts = getAllHealingAttempts();
+    if (newAttempts.length === 0) {
+        console.log('✅ Nenhuma nova atuação do agente para registrar. O processo será encerrado sem alterações.');
+        return; // Encerra o script se não houver nada novo para adicionar
+    }
+
+    // 3. Combina os dados históricos com os novos
+    const combinedAttempts = [...historicAttempts, ...newAttempts];
+    console.log(`📈 Total de correções para processar (histórico + novas): ${combinedAttempts.length}`);
+    
+    // 4. Processa os dados combinados para gerar o objeto final de métricas
+    const finalMetrics = processHealingAttempts(combinedAttempts);
+    
+    // 5. Salva o JSON de métricas acumulado
+    fs.writeFileSync(METRICS_FILE_PATH, JSON.stringify(finalMetrics, null, 2));
+    console.log(`✅ Arquivo de métricas salvo com sucesso em: ${METRICS_FILE_PATH}`);
+    console.log('Resumo gerado:', finalMetrics.summary);
 }
 
 // --- EXECUÇÃO ---
 try {
-    main(); // <-- Garante que a função principal 'main' está sendo chamada
+    main();
 } catch (error) {
     console.error('❌ Falha crítica ao gerar métricas:', error);
     process.exit(1);
