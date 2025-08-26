@@ -251,56 +251,40 @@ class SelfHealingTestRunner {
         });
     }
 
-    async _testSelector(selector, timeout = 5000, expectedAttributes = {}) {
-        try {
-            console.log(`🔍 Testando seletor: ${selector}`);
-            const element = this.page.locator(selector);
-            
-            // Aumentar timeout para elementos pós-login
-            const effectiveTimeout = selector.includes('dashboard') ? 30000 : timeout;
-            
-            // Tentar localizar o elemento com retry
-            let isVisible = false;
-            let attempts = 3;
-            while (attempts > 0 && !isVisible) {
-                try {
-                    await element.waitFor({ state: 'visible', timeout: effectiveTimeout });
-                    isVisible = await element.isVisible();
-                    if (isVisible) break;
-                } catch (error) {
-                    console.log(`⚠️ Tentativa ${4-attempts} falhou, tentando novamente...`);
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                }
-                attempts--;
-            }
-
-            if (!isVisible) {
-                console.log(`❌ Seletor '${selector}' não está visível após todas as tentativas`);
-                return false;
-            }
-
-            // Validação extra: checar atributos esperados
-            let allMatch = true;
-            for (const [attr, value] of Object.entries(expectedAttributes)) {
-                const attrValue = await element.getAttribute(attr);
-                if (attrValue !== value) {
-                    allMatch = false;
-                    break;
-                }
-            }
-            
-            if (!allMatch) {
-                console.log(`❌ Seletor '${selector}' não corresponde aos atributos esperados`);
-                return false;
-            }
-
-            console.log(`✅ Seletor '${selector}' encontrado e validado com sucesso`);
-            return true;
-        } catch (error) {
-            console.log(`❌ Erro ao testar seletor '${selector}':`, error);
+    // Substitua o método _testSelector existente por este:
+async _testSelector(selector, timeout = 5000, expectedAttributes = {}) {
+    try {
+        console.log(`🔍 Testando seletor: ${selector}`);
+        const element = this.page.locator(selector);
+        const effectiveTimeout = selector.includes('dashboard') ? 30000 : timeout;
+        
+        await element.waitFor({ state: 'visible', timeout: effectiveTimeout });
+        if (!(await element.isEnabled())) {
+            console.log(`❌ Seletor '${selector}' está visível, mas não está habilitado.`);
             return false;
         }
+
+        let allMatch = true;
+        for (const [attr, value] of Object.entries(expectedAttributes)) {
+            const attrValue = await element.getAttribute(attr);
+            if (attrValue !== value) {
+                allMatch = false;
+                break;
+            }
+        }
+        
+        if (!allMatch) {
+            console.log(`❌ Seletor '${selector}' não corresponde aos atributos esperados`);
+            return false;
+        }
+
+        console.log(`✅ Seletor '${selector}' encontrado, visível e habilitado para interação`);
+        return true;
+    } catch (error) {
+        console.error(`❌ Seletor '${selector}' falhou no teste de validação:`, error);
+        return false;
     }
+}
 
     async _testSuggestedSelectors(suggestedSelectors, timeout, maxAttempts, expectedAttributes = {}) {
         console.log(`🔍 Testando ${suggestedSelectors.length} seletores sugeridos...`);

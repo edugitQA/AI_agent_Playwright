@@ -175,6 +175,12 @@ class DOMAnalyzer:
                     
         return min(score, 1.0) 
 
+    def _is_selector_blocked(self, selector: str) -> bool:
+        """Verifica se um seletor é genérico demais."""
+        blocked_selectors = ['#root', 'body', 'html']
+        return selector.strip() in blocked_selectors
+
+
     def _generate_selectors_for_element(self, tag: Tag) -> List[str]:
         """Gera diferentes tipos de seletores para um elemento"""
         selectors = []
@@ -210,9 +216,9 @@ class DOMAnalyzer:
         if tag.get('class'):
             css_selector += f'.{tag.get("class")[0]}'
         selectors.append(css_selector)
-        
-        return selectors
 
+        return [s for s in selectors if not self._is_selector_blocked(s)]
+    
 class LangGraphSelectorAgent:
     """Agente que realiza análise e correção de seletores"""
     
