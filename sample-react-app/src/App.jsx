@@ -286,7 +286,7 @@ function App() {
           <Button 
             onClick={handleLogin} 
             className="w-full"
-            data-testid="login-button-old"
+            data-testid="login-button"
           >
             Entrar
           </Button>
