@@ -140,19 +140,31 @@ class DOMAnalyzer:
     def _calculate_similarity(self, tag: Tag, keywords: List[str], description: str) -> float:
         """Calcula score de similaridade entre um elemento e a descrição"""
         score = 0.0
-        
+        description_lower = description.lower()
+        tag_bonus = 0.0
+        if 'button' in description_lower or 'botão' in description_lower:
+            if tag.name == 'button':
+                tag_bonus = 0.6  # Bônus massivo
+        elif tag.get('role') == 'button':
+            tag_bonus = 0.4 # Bônus alto para roles
+
+        elif 'input' in description_lower or 'campo' in description_lower:
+            if tag.name == 'input':
+                tag_bonus = 0.7 # Bônus massivo
+        score += tag_bonus
+
         # Verificar texto do elemento
         element_text = tag.get_text(strip=True).lower()
         for keyword in keywords:
             if keyword in element_text:
-                score += 0.3
+                score += 0.15
         
         # Verificar atributos
         attributes_text = ' '.join([f"{k}={v}" for k, v in tag.attrs.items()]).lower()
         for keyword in keywords:
             if keyword in attributes_text:
-                score += 0.2
-        
+                score += 0.1
+
         # Verificar tipo de elemento
         if 'input' in description.lower() and tag.name == 'input':
             score += 0.4
@@ -164,7 +176,8 @@ class DOMAnalyzer:
             placeholder_text = tag.get('placeholder').lower()
             for keyword in keywords:
                 if keyword in placeholder_text:
-                    score += 0.4
+                    score += 0.3
+
         #verificação de atributos 'aria-label' e 'title'
         for attr in ['aria-label', 'title']:
             if tag.get(attr):
@@ -175,44 +188,52 @@ class DOMAnalyzer:
                     
         return min(score, 1.0) 
 
+    def _is_selector_blocked(self, selector: str) -> bool:
+        """Verifica se um seletor é genérico demais."""
+        blocked_selectors = ['#root', 'body', 'html']
+        return selector.strip() in blocked_selectors
+
+
     def _generate_selectors_for_element(self, tag: Tag) -> List[str]:
-        """Gera diferentes tipos de seletores para um elemento"""
+        """Gera diferentes tipos de seletores para um elemento de forma otimizada."""
         selectors = []
-        
-        # data-testid (prioridade alta)
+    
+    # 1. Atributos de alta prioridade
         if tag.get('data-testid'):
             selectors.append(f'[data-testid="{tag.get("data-testid")}"]')
-        
-        # Placeholder (segunda maior prioridade para inputs)
+        if tag.get('id') and not self._is_selector_blocked(f'#{tag.get("id")}'):
+            selectors.append(f'#{tag.get("id")}')
+    
+    # 2. Atributos de contexto (placeholder para inputs)
         if tag.name == 'input' and tag.get('placeholder'):
             selectors.append(f'placeholder="{tag.get("placeholder")}"')
 
-        # ID
-        if tag.get('id'):
-            selectors.append(f'#{tag.get("id")}')
-        
-        # Classes
+    # 3. Seletor de classe robusto
         if tag.get('class'):
-            classes = ' '.join(tag.get('class'))
-            selectors.append(f'.{".".join(tag.get("class"))}')
-        
-        # Texto visível
+            stable_classes = [c for c in tag.get('class') if not c.isdigit() and len(c) > 2]
+        if stable_classes:
+            selectors.append(f'.{".".join(stable_classes)}')
+    
+    # 4. Texto visível (ótimo para botões e links)
         text = tag.get_text(strip=True)
-        if text and len(text) < 50:
-            selectors.append(f'text="{text}"')
-        
-        # Tipo de input
-        if tag.name == 'input' and tag.get('type'):
+        if text and len(text) < 50 and '\n' not in text:
+            escaped_text = text.replace('"', '\\"').replace("'", "\\'")
+            selectors.append(f'text="{escaped_text}"')
+    
+    # 5. Seletor de tag + tipo (último recurso para inputs)
+        if tag.name == 'input' and tag.get('type') and not any(s.startswith('placeholder=') for s in selectors):
             selectors.append(f'input[type="{tag.get("type")}"]')
-        
-        # Seletor CSS genérico
-        css_selector = tag.name
-        if tag.get('class'):
-            css_selector += f'.{tag.get("class")[0]}'
-        selectors.append(css_selector)
-        
-        return selectors
+    
+    # Filtra seletores bloqueados conhecidos, como #root, body, etc.
+        final_selectors = [s for s in selectors if s and not self._is_selector_blocked(s)]
+    
+    # Garante que não retornamos uma lista vazia, usando a tag como último recurso
+    # para elementos que não são de layout genérico.
+        if not final_selectors and tag.name and tag.name not in ['div', 'span', 'p', 'form']:
+            final_selectors.append(tag.name)
 
+        return list(dict.fromkeys(final_selectors)) 
+    
 class LangGraphSelectorAgent:
     """Agente que realiza análise e correção de seletores"""
     
