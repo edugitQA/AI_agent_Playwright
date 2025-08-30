@@ -124,7 +124,10 @@ export function AutomationHealthDashboard() {
   useEffect(() => {
     console.log('🔄 Iniciando carregamento das métricas...');
     
-    fetch('./metrics/agent_activity.log')
+    // Caminho correto para GitHub Pages
+    const metricsPath = './metrics/agent_activity.log';
+    
+    fetch(metricsPath)
       .then(response => {
         console.log('📡 Response status:', response.status);
         if (!response.ok) {
