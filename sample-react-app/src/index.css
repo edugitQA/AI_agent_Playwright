@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+/* Camadas base úteis para reset e cores do tema */
+@layer base {
+	html, body, #root {
+		height: 100%;
+	}
+	body {
+		background-color: var(--background, #ffffff);
+		color: var(--foreground, #111827);
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+}
+
+/* Apenas um espaço reservado para garantir que o arquivo seja processado
+	 mesmo que App.css também importe o Tailwind. Manter ambas as entradas
+	 ajuda na ordem de carregamento e evita telas sem estilo. */
