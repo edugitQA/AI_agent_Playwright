@@ -29,8 +29,8 @@ Em projetos de desenvolvimento ágil, especialmente com frameworks como React, V
 Desenvolvemos um **agente de IA autônomo** que atua como um "mecânico de testes" inteligente:
 
 ### ✅ **Resultados Comprovados:**
-- 🎯 **4/4 testes passando** com auto-correção ativa
-- 🤖 **2 seletores corrigidos** automaticamente no último teste
+- 🎯 **testes passando** com auto-correção ativa
+- 🤖 **seletores corrigidos** automaticamente no último teste
 - ⚡ **Cache inteligente** evitando reprocessamento 
 - 📊 **Taxa de sucesso: 100%** em ambiente funcional
 
