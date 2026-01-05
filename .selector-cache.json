@@ -1,0 +1,3 @@
+{
+  "passwordInput": "[data-testid=\"password-field\"]"
+}

@@ -1,7 +1,9 @@
 // File: tests/pages/LoginPage.ts
 
 import { type Page } from '@playwright/test';
-const { SelfHealingTestRunner } = require('../../agent/self_healing_runner.js');
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { SelfHealingTestRunner } = require('../../../agent/self_healing_runner.js');
 
 export class LoginPage {
     private runner: typeof SelfHealingTestRunner.prototype;
