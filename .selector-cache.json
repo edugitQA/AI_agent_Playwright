@@ -1,3 +1,4 @@
 {
-  "passwordInput": "[data-testid=\"password-field\"]"
+  "passwordInput": "[data-testid=\"password-field\"]",
+  "loginButton": "[data-testid=\"login-button\"]"
 }

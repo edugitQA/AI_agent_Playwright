@@ -97,83 +97,8 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 46961,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at C:\\Users\\EduardoAlvesDePauloF\\Documents\\AI_agent_Playwright\\sample-react-app\\tests\\login.spec.ts:61:30",
-                        "location": {
-                          "file": "C:\\Users\\EduardoAlvesDePauloF\\Documents\\AI_agent_Playwright\\sample-react-app\\tests\\login.spec.ts",
-                          "column": 30,
-                          "line": 61
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 59 |\u001b[39m         \u001b[90m// Verificar se a tela de sucesso do login está visível\u001b[39m\n \u001b[90m 60 |\u001b[39m         \u001b[36mconst\u001b[39m loginSuccess \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m loginPage\u001b[33m.\u001b[39mverifyLoginSuccess()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 61 |\u001b[39m         expect(loginSuccess)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 62 |\u001b[39m\n \u001b[90m 63 |\u001b[39m         \u001b[90m// Clicar no botão para ir ao dashboard (com auto-correção para seletor quebrado)\u001b[39m\n \u001b[90m 64 |\u001b[39m         \u001b[36mtry\u001b[39m {\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "C:\\Users\\EduardoAlvesDePauloF\\Documents\\AI_agent_Playwright\\sample-react-app\\tests\\login.spec.ts",
-                            "column": 30,
-                            "line": 61
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n\u001b[0m \u001b[90m 59 |\u001b[39m         \u001b[90m// Verificar se a tela de sucesso do login está visível\u001b[39m\n \u001b[90m 60 |\u001b[39m         \u001b[36mconst\u001b[39m loginSuccess \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m loginPage\u001b[33m.\u001b[39mverifyLoginSuccess()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 61 |\u001b[39m         expect(loginSuccess)\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 62 |\u001b[39m\n \u001b[90m 63 |\u001b[39m         \u001b[90m// Clicar no botão para ir ao dashboard (com auto-correção para seletor quebrado)\u001b[39m\n \u001b[90m 64 |\u001b[39m         \u001b[36mtry\u001b[39m {\u001b[0m\n\u001b[2m    at C:\\Users\\EduardoAlvesDePauloF\\Documents\\AI_agent_Playwright\\sample-react-app\\tests\\login.spec.ts:61:30\u001b[22m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "Iniciando teste de login com sistema de auto-correção...\n"
-                        },
-                        {
-                          "text": "✅ Cache carregado: 1 seletores\n"
-                        },
-                        {
-                          "text": "🔧 Iniciando auto-correção para: passwordInput\n"
-                        },
-                        {
-                          "text": "[Auto-Correção] Atualizando seletor 'passwordInput' para: [data-testid=\"password-field\"]\n"
-                        }
-                      ],
-                      "stderr": [
-                        {
-                          "text": "❌ Mensagem de sucesso do login não encontrada: TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Login Realizado com Sucesso!') to be visible\u001b[22m\n\n"
-                        }
-                      ],
-                      "retry": 0,
-                      "startTime": "2026-01-05T02:05:02.398Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\Users\\EduardoAlvesDePauloF\\Documents\\AI_agent_Playwright\\sample-react-app\\test-results\\artifacts\\login-Sistema-de-Login-com-00a5c--e-navegar-para-o-dashboard-chromium\\test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "C:\\Users\\EduardoAlvesDePauloF\\Documents\\AI_agent_Playwright\\sample-react-app\\test-results\\artifacts\\login-Sistema-de-Login-com-00a5c--e-navegar-para-o-dashboard-chromium\\video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\Users\\EduardoAlvesDePauloF\\Documents\\AI_agent_Playwright\\sample-react-app\\test-results\\artifacts\\login-Sistema-de-Login-com-00a5c--e-navegar-para-o-dashboard-chromium\\error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "C:\\Users\\EduardoAlvesDePauloF\\Documents\\AI_agent_Playwright\\sample-react-app\\test-results\\artifacts\\login-Sistema-de-Login-com-00a5c--e-navegar-para-o-dashboard-chromium\\trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "C:\\Users\\EduardoAlvesDePauloF\\Documents\\AI_agent_Playwright\\sample-react-app\\tests\\login.spec.ts",
-                        "column": 30,
-                        "line": 61
-                      }
-                    },
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 31724,
+                      "duration": 65020,
                       "errors": [],
                       "stdout": [
                         {
@@ -189,17 +114,35 @@
                           "text": "[Auto-Correção] Atualizando seletor 'passwordInput' para: [data-testid=\"password-field\"]\n"
                         },
                         {
+                          "text": "🔧 Iniciando auto-correção para: loginButton\n"
+                        },
+                        {
+                          "text": "📄 DOM capturado: 235856 caracteres\n"
+                        },
+                        {
+                          "text": "📡 Enviando DOM para o Agente IA via API...\n"
+                        },
+                        {
+                          "text": "🤖 IA Sugeriu: [data-testid=\"login-button\"], button[data-testid=\"login-button\"], button:has-text(\"Entrar\")\n"
+                        },
+                        {
+                          "text": "💾 Cache salvo com sucesso\n"
+                        },
+                        {
+                          "text": "[Auto-Correção] Atualizando seletor 'loginButton' para: [data-testid=\"login-button\"]\n"
+                        },
+                        {
                           "text": "✅ Teste de login concluído com sucesso! Sistema de auto-correção funcionou perfeitamente.\n"
                         }
                       ],
                       "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-01-05T02:05:51.643Z",
+                      "retry": 0,
+                      "startTime": "2026-01-06T00:31:38.793Z",
                       "annotations": [],
                       "attachments": []
                     }
                   ],
-                  "status": "flaky"
+                  "status": "expected"
                 }
               ],
               "id": "41d3fd2474a19feb00a1-e5a191d30dbeeacbe114",
@@ -220,10 +163,10 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 32223,
+                      "duration": 62134,
                       "errors": [],
                       "stdout": [
                         {
@@ -233,7 +176,7 @@
                           "text": "🚀 Iniciando teste de credenciais inválidas...\n"
                         },
                         {
-                          "text": "✅ Cache carregado: 1 seletores\n"
+                          "text": "✅ Cache carregado: 2 seletores\n"
                         },
                         {
                           "text": "🔧 Iniciando auto-correção para: passwordInput\n"
@@ -242,12 +185,18 @@
                           "text": "[Auto-Correção] Atualizando seletor 'passwordInput' para: [data-testid=\"password-field\"]\n"
                         },
                         {
+                          "text": "🔧 Iniciando auto-correção para: loginButton\n"
+                        },
+                        {
+                          "text": "[Auto-Correção] Atualizando seletor 'loginButton' para: [data-testid=\"login-button\"]\n"
+                        },
+                        {
                           "text": "✅ Teste de credenciais inválidas concluído com sucesso!\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-01-05T02:06:23.698Z",
+                      "startTime": "2026-01-06T00:32:44.638Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -273,10 +222,10 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1232,
+                      "duration": 1130,
                       "errors": [],
                       "stdout": [
                         {
@@ -286,7 +235,7 @@
                           "text": "� Testando navegação para registro...\n"
                         },
                         {
-                          "text": "✅ Cache carregado: 1 seletores\n"
+                          "text": "✅ Cache carregado: 2 seletores\n"
                         },
                         {
                           "text": "✅ Navegação para registro concluída com sucesso!\n"
@@ -294,7 +243,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-01-05T02:06:55.949Z",
+                      "startTime": "2026-01-06T00:33:46.781Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -320,10 +269,10 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 4255,
+                      "duration": 34089,
                       "errors": [],
                       "stdout": [
                         {
@@ -333,7 +282,13 @@
                           "text": "🚀 Testando validação de campos obrigatórios...\n"
                         },
                         {
-                          "text": "✅ Cache carregado: 1 seletores\n"
+                          "text": "✅ Cache carregado: 2 seletores\n"
+                        },
+                        {
+                          "text": "🔧 Iniciando auto-correção para: loginButton\n"
+                        },
+                        {
+                          "text": "[Auto-Correção] Atualizando seletor 'loginButton' para: [data-testid=\"login-button\"]\n"
                         },
                         {
                           "text": "✅ Validação de campos obrigatórios testada!\n"
@@ -341,7 +296,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-01-05T02:06:57.196Z",
+                      "startTime": "2026-01-06T00:33:47.918Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -361,11 +316,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-01-05T02:05:01.088Z",
-    "duration": 120650.026,
-    "expected": 3,
+    "startTime": "2026-01-06T00:31:37.330Z",
+    "duration": 165937.868,
+    "expected": 4,
     "skipped": 0,
     "unexpected": 0,
-    "flaky": 1
+    "flaky": 0
   }
 }
