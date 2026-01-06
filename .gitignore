@@ -9,10 +9,12 @@ __pycache__/
 .pytest_cache
 
 # Playwright
-/test-results/
-/playwright-report/
-/playwright/.cache/
+test-results/
+playwright-report/
+playwright/.cache/
 /blob-report/
+sample-react-app/test-results/
+sample-react-app/playwright-report/
 
 # Project specific
 logs/*.json
