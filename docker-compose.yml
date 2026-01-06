@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # Serviço de Cache de Alta Performance
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - agent-network
+
+  # Sua API de Inteligência Artificial
+  ai-agent:
+    build: 
+      context: .
+      dockerfile: Dockerfile.agent
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    volumes:
+      - ./agent:/app/agent  # Hot-reload para desenvolvimento
+      - ./logs:/app/logs
+    command: uvicorn agent.api:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - agent-network
+
+networks:
+  agent-network:
+
+volumes:
+  redis_data:
