@@ -1,13 +1,14 @@
 name: E2E Tests com Auto-Correção
 
-on:
-  push:
-    branches: [master, main]
-  pull_request:
-    branches: [master, main]
-  workflow_dispatch:
-  schedule:
-    - cron: '0 6 * * *'  # Executa diariamente às 03:00 BRT (06:00 UTC)
+# Pipeline desativado temporariamente
+# on:
+#   push:
+#     branches: [master, main]
+#   pull_request:
+#     branches: [master, main]
+#   workflow_dispatch:
+#   schedule:
+#     - cron: '0 6 * * *'  # Executa diariamente às 03:00 BRT (06:00 UTC)
 
 permissions:
   contents: write

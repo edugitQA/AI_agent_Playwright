@@ -1,8 +1,14 @@
 import { defineConfig, devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
 
-// Carrega as variáveis de ambiente do arquivo .env
-dotenv.config();
+// Para ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Carrega as variáveis de ambiente do arquivo .env da raiz do projeto
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 /**
  * Configuração do Playwright para a PoC de Auto-Correção de Testes
@@ -89,9 +95,9 @@ export default defineConfig({
   // --- Servidor de Desenvolvimento ---
   // O Playwright irá iniciar este comando antes de rodar os testes
   webServer: {
-    command: 'pnpm --prefix sample-react-app dev',
+    command: 'npm run dev',
     url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true, // Sempre reutiliza servidor existente
     timeout: 2 * 60 * 1000, // 2 minutos para o servidor iniciar
   },
 

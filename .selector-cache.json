@@ -1,0 +1,4 @@
+{
+  "passwordInput": "[data-testid=\"password-field\"]",
+  "loginButton": "[data-testid=\"login-button\"]"
+}

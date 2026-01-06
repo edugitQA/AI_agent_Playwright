@@ -1,0 +1,326 @@
+{
+  "config": {
+    "configFile": "C:\\Users\\EduardoAlvesDePauloF\\Documents\\AI_agent_Playwright\\sample-react-app\\playwright.config.ts",
+    "rootDir": "C:/Users/EduardoAlvesDePauloF/Documents/AI_agent_Playwright/sample-react-app/tests",
+    "forbidOnly": true,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 600000,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/Users/EduardoAlvesDePauloF/Documents/AI_agent_Playwright/sample-react-app/test-results/artifacts",
+        "repeatEach": 1,
+        "retries": 2,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/EduardoAlvesDePauloF/Documents/AI_agent_Playwright/sample-react-app/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 180000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:5173",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "login.spec.ts",
+      "file": "login.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Sistema de Login com Auto-Correção",
+          "file": "login.spec.ts",
+          "line": 23,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Deve fazer login com sucesso e navegar para o dashboard",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 65020,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Iniciando teste de login com sistema de auto-correção...\n"
+                        },
+                        {
+                          "text": "✅ Cache carregado: 1 seletores\n"
+                        },
+                        {
+                          "text": "🔧 Iniciando auto-correção para: passwordInput\n"
+                        },
+                        {
+                          "text": "[Auto-Correção] Atualizando seletor 'passwordInput' para: [data-testid=\"password-field\"]\n"
+                        },
+                        {
+                          "text": "🔧 Iniciando auto-correção para: loginButton\n"
+                        },
+                        {
+                          "text": "📄 DOM capturado: 235856 caracteres\n"
+                        },
+                        {
+                          "text": "📡 Enviando DOM para o Agente IA via API...\n"
+                        },
+                        {
+                          "text": "🤖 IA Sugeriu: [data-testid=\"login-button\"], button[data-testid=\"login-button\"], button:has-text(\"Entrar\")\n"
+                        },
+                        {
+                          "text": "💾 Cache salvo com sucesso\n"
+                        },
+                        {
+                          "text": "[Auto-Correção] Atualizando seletor 'loginButton' para: [data-testid=\"login-button\"]\n"
+                        },
+                        {
+                          "text": "✅ Teste de login concluído com sucesso! Sistema de auto-correção funcionou perfeitamente.\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-06T00:31:38.793Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "41d3fd2474a19feb00a1-e5a191d30dbeeacbe114",
+              "file": "login.spec.ts",
+              "line": 31,
+              "column": 5
+            },
+            {
+              "title": "Deve exibir mensagem de erro para credenciais inválidas",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 62134,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Iniciando teste de login com sistema de auto-correção...\n"
+                        },
+                        {
+                          "text": "🚀 Iniciando teste de credenciais inválidas...\n"
+                        },
+                        {
+                          "text": "✅ Cache carregado: 2 seletores\n"
+                        },
+                        {
+                          "text": "🔧 Iniciando auto-correção para: passwordInput\n"
+                        },
+                        {
+                          "text": "[Auto-Correção] Atualizando seletor 'passwordInput' para: [data-testid=\"password-field\"]\n"
+                        },
+                        {
+                          "text": "🔧 Iniciando auto-correção para: loginButton\n"
+                        },
+                        {
+                          "text": "[Auto-Correção] Atualizando seletor 'loginButton' para: [data-testid=\"login-button\"]\n"
+                        },
+                        {
+                          "text": "✅ Teste de credenciais inválidas concluído com sucesso!\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-06T00:32:44.638Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "41d3fd2474a19feb00a1-068bef91d0deb6ef8d44",
+              "file": "login.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "Deve navegar para a página de registro",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1130,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Iniciando teste de login com sistema de auto-correção...\n"
+                        },
+                        {
+                          "text": "� Testando navegação para registro...\n"
+                        },
+                        {
+                          "text": "✅ Cache carregado: 2 seletores\n"
+                        },
+                        {
+                          "text": "✅ Navegação para registro concluída com sucesso!\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-06T00:33:46.781Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "41d3fd2474a19feb00a1-5890d5dc77f9ca7a4f54",
+              "file": "login.spec.ts",
+              "line": 116,
+              "column": 5
+            },
+            {
+              "title": "Deve validar campos obrigatórios",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 34089,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Iniciando teste de login com sistema de auto-correção...\n"
+                        },
+                        {
+                          "text": "🚀 Testando validação de campos obrigatórios...\n"
+                        },
+                        {
+                          "text": "✅ Cache carregado: 2 seletores\n"
+                        },
+                        {
+                          "text": "🔧 Iniciando auto-correção para: loginButton\n"
+                        },
+                        {
+                          "text": "[Auto-Correção] Atualizando seletor 'loginButton' para: [data-testid=\"login-button\"]\n"
+                        },
+                        {
+                          "text": "✅ Validação de campos obrigatórios testada!\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-06T00:33:47.918Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "41d3fd2474a19feb00a1-aa99bafe93115619e462",
+              "file": "login.spec.ts",
+              "line": 139,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-01-06T00:31:37.330Z",
+    "duration": 165937.868,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -1,7 +1,9 @@
 // File: tests/pages/LoginPage.ts
 
 import { type Page } from '@playwright/test';
-const { SelfHealingTestRunner } = require('../../agent/self_healing_runner.js');
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { SelfHealingTestRunner } = require('../../../agent/self_healing_runner.js');
 
 export class LoginPage {
     private runner: typeof SelfHealingTestRunner.prototype;
@@ -11,7 +13,7 @@ export class LoginPage {
     private selectors = {
         usernameInput: '[data-testid="username-input"]', // Seletor quebrado implementado posteriormente!
         passwordInput: '[data-testid="password-input"]', // Seletor quebrado!
-        loginButton: '[data-testid="login-button"]',
+        loginButton: '[data-teste="login-button"]',
         dashboardButton: '[data-testid="dashboard-button"]',
         errorMessage: '[data-testid="error-message"]',
         registerButton: '[data-testid="register-button"]',
