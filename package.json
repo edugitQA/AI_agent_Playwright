@@ -7,22 +7,26 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "playwright test",
-    "test:debug": "playwright test --debug",
+    "test": "cd sample-react-app && playwright test",
+    "test:headed": "cd sample-react-app && PLAYWRIGHT_HEADLESS=false playwright test",
+    "test:ui": "cd sample-react-app && playwright test --ui",
+    "test:debug": "cd sample-react-app && playwright test --debug",
+    "test:clean": "rm -rf test-results/* playwright-report/* logs/* dom_snapshots/* && npm test",
     "start:app": "cd sample-react-app && npm run dev",
-    "install:app": "cd sample-react-app && npm install",
-    "report": "playwright show-report",
+    "install:app": "cd sample-react-app && npm install --legacy-peer-deps",
+    "setup:all": "npm install && npm run install:app && npx playwright install",
+    "report": "cd sample-react-app && playwright show-report",
     "agent-report": "node scripts/generate-agent-report.js",
     "history-report": "node scripts/compile-selector-history.js",
     "all-reports": "npm run agent-report && npm run history-report && npm run report",
     "setup:ci": "node scripts/setup-ci-environment.js",
-    "simulate:breaks": "node scripts/simulate-breaks.js"
+    "simulate:breaks": "node scripts/simulate-breaks.js",
+    "codegen": "cd sample-react-app && playwright codegen http://localhost:5173/AI_agent_Playwright/"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.54.1",
     "@types/node": "^24.1.0",
     "dotenv": "^17.2.0",
     "vite": "^7.1.3"

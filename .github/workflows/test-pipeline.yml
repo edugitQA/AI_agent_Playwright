@@ -1,0 +1,178 @@
+name: 🧪 Testes E2E com Auto-Correção
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'sample-react-app/**'
+      - 'agent/**'
+      - '.github/workflows/test-pipeline.yml'
+      - 'package.json'
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch: # Permite disparar manualmente
+
+env:
+  NODE_VERSION: '20'
+  BASE_URL: 'http://localhost:5173'
+
+jobs:
+  test:
+    name: 🎯 Executar Testes E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+      fail-fast: false
+
+    steps:
+      # 1️⃣ Clonar repositório
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Node.js
+      - name: 📦 Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      # 3️⃣ Instalar dependências da raiz
+      - name: 📥 Instalar dependências (raiz)
+        run: |
+          npm install 2>&1
+          echo "✅ Dependências da raiz instaladas"
+
+      # 4️⃣ Instalar dependências do sample-react-app
+      - name: 📥 Instalar dependências (sample-react-app)
+        run: |
+          cd sample-react-app
+          npm install --legacy-peer-deps 2>&1
+          echo "✅ Dependências do sample-react-app instaladas"
+
+      # 5️⃣ Instalar browsers Playwright
+      - name: 🌐 Instalar Playwright browsers
+        run: |
+          cd sample-react-app
+          npx playwright install --with-deps chromium
+          echo "✅ Browsers instalados"
+
+      # 6️⃣ Iniciar servidor React em background
+      - name: 🚀 Iniciar servidor React
+        run: |
+          cd sample-react-app
+          npm run dev &
+          # Aguardar servidor estar pronto
+          npx wait-on http://localhost:5173 --timeout 120000
+        timeout-minutes: 3
+
+      # 7️⃣ Executar testes
+      - name: 🧪 Executar testes E2E
+        id: test_run
+        run: |
+          cd sample-react-app
+          npm run test 2>&1 || echo "TESTS_FAILED=true" >> $GITHUB_ENV
+        continue-on-error: true
+
+      # 8️⃣ Se testes falharam, chamar agente de auto-correção
+      - name: 🤖 Chamar Agente de Auto-Correção (se falhas detectadas)
+        if: failure() || env.TESTS_FAILED == 'true'
+        run: |
+          echo "⚠️  Testes falharam! Acionando agente de auto-correção..."
+          
+          # Preparar payload para o agente
+          FAILURE_REPORT=$(cat sample-react-app/test-results/results.json 2>/dev/null || echo "{}")
+          
+          # Chamar API do agente para análise
+          curl -X POST https://ai-agent-playwright-1.onrender.com/analyze \
+            -H "Content-Type: application/json" \
+            -d "{\"results\": $FAILURE_REPORT, \"repository\": \"$GITHUB_REPOSITORY\", \"run_id\": \"$GITHUB_RUN_ID\"}" \
+            --max-time 300 || echo "⚠️  Agente não respondeu em tempo hábil"
+          
+          echo "✅ Agente acionado para análise de falhas"
+
+      # 9️⃣ Gerar relatório HTML
+      - name: 📊 Gerar relatório Playwright
+        if: always()
+        run: |
+          cd sample-react-app
+          npx playwright show-report --port 3000 &
+          sleep 2
+          echo "📄 Relatório disponível em: playwright-report/"
+
+      # 🔟 Upload de artefatos
+      - name: 📦 Upload artefatos (screenshots, vídeos, logs)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.node-version }}
+          path: |
+            sample-react-app/playwright-report/
+            sample-react-app/test-results/
+            sample-react-app/logs/
+            dom_snapshots/
+          retention-days: 30
+          if-no-files-found: warn
+
+      # 1️⃣1️⃣ Publicar relatório (opcional - requer Pages habilitado)
+      - name: 🌐 Deploy relatório para GitHub Pages
+        if: always() && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./sample-react-app/playwright-report
+          keep_files: true
+
+      # 1️⃣2️⃣ Notificar resultado
+      - name: 📢 Comentar resultado no PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const resultsPath = 'sample-react-app/test-results/results.json';
+            
+            let results = { stats: { expected: 0, passed: 0, failed: 0 } };
+            if (fs.existsSync(resultsPath)) {
+              const data = JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
+              results = data.stats || results;
+            }
+            
+            const status = results.failed === 0 ? '✅ PASSOU' : '❌ FALHOU';
+            const comment = `## 🧪 Resultados dos Testes E2E ${status}
+            
+            | Métrica | Resultado |
+            |---------|-----------|
+            | Total | ${results.expected || 0} |
+            | ✅ Passou | ${results.passed || 0} |
+            | ❌ Falhou | ${results.failed || 0} |
+            
+            📄 [Ver Relatório Completo](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  # Status final
+  status:
+    name: ✅ Status Final
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    steps:
+      - name: 🎯 Pipeline Status
+        run: |
+          if [ "${{ needs.test.result }}" = "success" ]; then
+            echo "✅ Pipeline executada com sucesso!"
+            exit 0
+          else
+            echo "⚠️  Pipeline com falhas detectadas"
+            exit 1
+          fi

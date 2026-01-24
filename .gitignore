@@ -21,6 +21,15 @@ logs/*.json
 logs/*.log
 dom_snapshots/*.html
 
+# Prompts
+*.prompt
+*.prompt.txt
+*.prompt.md
+prompt.txt
+prompt.md
+*_prompt.*
+prompts/
+
 # IDE
 .vscode/
 .DS_Storevenv/

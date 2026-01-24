@@ -16,7 +16,7 @@ const axios = require('axios'); // Certifique-se de instalar: npm install axios
 class SelfHealingTestRunner {
     constructor(page) {
         this.page = page;
-        this.apiBaseUrl = 'http://localhost:8000'; // URL da API Python
+        this.apiBaseUrl = 'https://ai-agent-playwright-1.onrender.com'; // URL da API Python em Produção
         this.healingAttempts = [];
         this.selectorCache = new Map();
         this.cacheFile = path.join(__dirname, '../.selector-cache.json');
