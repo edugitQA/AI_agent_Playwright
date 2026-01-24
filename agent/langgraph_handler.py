@@ -1,15 +1,26 @@
 import os
+import sys
 import logging
 from typing import List, Optional
 from pydantic import BaseModel, Field
 from bs4 import BeautifulSoup, Tag
-from langgraph.graph import StateGraph
-from langchain_core.messages import SystemMessage
-from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
+
+# Validar OPENAI_API_KEY
+if not os.getenv("OPENAI_API_KEY"):
+    raise EnvironmentError("❌ ERRO: Variável OPENAI_API_KEY não configurada!")
+
+# Importar depois de validar variáveis
+try:
+    from langgraph.graph import StateGraph
+    from langchain_core.messages import SystemMessage
+    from langchain_openai import ChatOpenAI
+except ImportError as e:
+    print(f"❌ Erro ao importar dependências LangGraph/LangChain: {e}")
+    sys.exit(1)
 
 # Configuração de Logs
 logging.basicConfig(level=logging.INFO)
