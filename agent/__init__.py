@@ -13,10 +13,10 @@ Autor: Eduardo Alves
 Data: 2025-08-23
 """
 
-from .langgraph_handler import LangGraphSelectorAgent, SelectorAnalysis
+from .langgraph_handler import LangGraphSelectorAgent, SelectorSuggestion
 
 __all__ = [
     'LangGraphSelectorAgent',
-    'SelectorAnalysis'
+    'SelectorSuggestion'
 ]
 
