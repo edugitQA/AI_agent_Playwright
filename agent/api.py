@@ -13,7 +13,7 @@ if not os.getenv("OPENAI_API_KEY"):
     raise EnvironmentError("❌ ERRO: Variável OPENAI_API_KEY não encontrada. Configure-a no Render.")
 
 try:
-    from langgraph_handler import LangGraphSelectorAgent
+    from .langgraph_handler import LangGraphSelectorAgent
 except ImportError as e:
     print(f"❌ Erro ao importar LangGraphSelectorAgent: {e}")
     sys.exit(1)
