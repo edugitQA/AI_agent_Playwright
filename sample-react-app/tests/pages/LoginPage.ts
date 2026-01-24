@@ -12,7 +12,7 @@ export class LoginPage {
     // Alguns seletores estão intencionalmente quebrados para demonstrar auto-correção
     private selectors = {
         usernameInput: '[data-testid="username-input"]', // Seletor quebrado implementado posteriormente!
-        passwordInput: '[data-testid="password-field"]', // Seletor quebrado!
+        passwordInput: '[data-testid="password-input"]', // Seletor quebrado!
         loginButton: '[data-testid="login-button"]',
         dashboardButton: '[data-testid="dashboard-button"]',
         errorMessage: '[data-testid="error-message"]',
