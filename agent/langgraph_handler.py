@@ -13,6 +13,17 @@ load_dotenv()
 if not os.getenv("OPENAI_API_KEY"):
     raise EnvironmentError("❌ ERRO: Variável OPENAI_API_KEY não configurada!")
 
+# Configurar LangSmith Tracing (se as variáveis estiverem configuradas)
+if os.getenv("LANGCHAIN_API_KEY"):
+    os.environ["LANGCHAIN_TRACING_V2"] = os.getenv("LANGCHAIN_TRACING_V2", "true")
+    os.environ["LANGCHAIN_ENDPOINT"] = os.getenv("LANGCHAIN_ENDPOINT", "https://api.smith.langchain.com")
+    os.environ["LANGCHAIN_PROJECT"] = os.getenv("LANGCHAIN_PROJECT", "AI-Agent-Playwright")
+    logger = logging.getLogger(__name__)
+    logger.info("✅ LangSmith Tracing habilitado!")
+else:
+    logger = logging.getLogger(__name__)
+    logger.warning("⚠️ LANGCHAIN_API_KEY não configurada - LangSmith desabilitado")
+
 # Importar depois de validar variáveis
 try:
     from langgraph.graph import StateGraph
@@ -115,7 +126,18 @@ class LangGraphSelectorAgent:
             error_message=error
         )
         
-        result = self.graph.invoke(initial_state)
+        # Configurar metadata para o trace do LangSmith
+        config = {
+            "metadata": {
+                "selector": original_selector,
+                "description": description,
+                "error_type": error[:100] if error else "N/A",
+                "dom_size": len(dom_html)
+            },
+            "tags": ["self-healing", "selector-analysis"]
+        }
+        
+        result = self.graph.invoke(initial_state, config=config)
         output = result.get('final_response')
         
         if output:
